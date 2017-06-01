@@ -2,19 +2,19 @@
   "provider": "PollsServiceProvider",
   "scripts": {
     "install": [
-      "php {HOOKS}/polls/scripts/install.php"
+      "php {HOOKS}/voyager-polls/scripts/install.php"
     ],
     "uninstall": [
-      "php {HOOKS}/polls/scripts/uninstall.php"
+      "php {HOOKS}/voyager-polls/scripts/uninstall.php"
     ],
     "update": [
-      "php {HOOKS}/polls/scripts/update.php"
+      "php {HOOKS}/voyager-polls/scripts/update.php"
     ],
     "enable": [
-      "php {HOOKS}/polls/scripts/enable.php"
+      "php {HOOKS}/voyager-polls/scripts/enable.php"
     ],
     "disable": [
-      "php {HOOKS}/polls/scripts/disable.php"
+      "php {HOOKS}/voyager-polls/scripts/disable.php"
     ]
   }
 }
