@@ -1,0 +1,20 @@
+{
+  "provider": "PollsServiceProvider",
+  "scripts": {
+    "install": [
+      "php {HOOKS}/polls/scripts/install.php"
+    ],
+    "uninstall": [
+      "php {HOOKS}/polls/scripts/uninstall.php"
+    ],
+    "update": [
+      "php {HOOKS}/polls/scripts/update.php"
+    ],
+    "enable": [
+      "php {HOOKS}/polls/scripts/enable.php"
+    ],
+    "disable": [
+      "php {HOOKS}/polls/scripts/disable.php"
+    ]
+  }
+}
