@@ -1,0 +1,8 @@
+docs/
+test/
+.github/
+.nyc_output
+.idea
+coverage
+mix.sublime-project
+mix.sublime-workspace
