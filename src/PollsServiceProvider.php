@@ -10,15 +10,18 @@ use Illuminate\Database\Schema\Blueprint;
 
 class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
 {
+	private $models = [
+			'Poll',
+			'PollAnswer',
+			'PollQuestion'
+		];
+
 	public function boot(\Illuminate\Routing\Router $router, Dispatcher $events)
 	{
 		$events->listen('voyager.admin.routing', [$this, 'addPollsRoutes']);
 		$events->listen('voyager.menu.display', [$this, 'addPollsMenuItem']);
 		$this->loadViewsFrom(base_path('hooks/voyager-polls/resources/views'), 'polls');
-		
-		// if(Request::is('*/voyager-polls/enable')){
-		// 	dd('blah');
-		// }
+		$this->loadModels();
 	}
 
 	public function addPollsRoutes($router)
@@ -26,6 +29,8 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
         $namespacePrefix = '\\Hooks\\VoyagerPolls\\Http\\Controllers\\';
         $router->get('polls', ['uses' => $namespacePrefix.'PollsController@browse', 'as' => 'polls']);
         $router->get('polls/add', ['uses' => $namespacePrefix.'PollsController@add', 'as' => 'polls.add']);
+    	$router->post('polls/add', ['uses' => $namespacePrefix.'PollsController@add_post', 'as' => 'polls.add.post']);
+    	$router->get('polls/{id}/edit', ['uses' => $namespacePrefix.'PollsController@edit', 'as' => 'polls.edit']);
     }
 
 	public function addPollsMenuItem(Menu $menu)
@@ -50,25 +55,37 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
 	    }
 	}
 
+	private function loadModels(){
+		foreach($this->models as $model){
+			@include(__DIR__.'/Models/' . $model . '.php');
+		}
+	}
+
 	protected function ensurePermissionExist()
     {
-        $permission = Permission::firstOrNew([
-            'key'        => 'browse_polls',
-            'table_name' => 'admin',
-        ]);
-        if (!$permission->exists) {
-            $permission->save();
-            $role = Role::where('name', 'admin')->first();
-            if (!is_null($role)) {
-                $role->permissions()->attach($permission);
-            }
-        }
+        $permissions = [
+        	Permission::firstOrNew(['key' => 'browse_polls', 'table_name' => 'polls']),
+        	Permission::firstOrNew(['key' => 'read_polls', 'table_name' => 'polls']),
+        	Permission::firstOrNew(['key' => 'edit_polls', 'table_name' => 'polls']),
+        	Permission::firstOrNew(['key' => 'add_polls', 'table_name' => 'polls']),
+        	Permission::firstOrNew(['key' => 'delete_polls', 'table_name' => 'polls'])
+        ];
+
+        foreach($permissions as $permission){
+	        if (!$permission->exists) {
+	            $permission->save();
+	            $role = Role::where('name', 'admin')->first();
+	            if (!is_null($role)) {
+	                $role->permissions()->attach($permission);
+	            }
+	        }
+	    }
     }
 
     private function addPollsTable(){
-    	if(!Schema::hasTable('voyager_poll')){
+    	if(!Schema::hasTable('voyager_polls')){
 
-    		Schema::create('voyager_poll', function (Blueprint $table) {
+    		Schema::create('voyager_polls', function (Blueprint $table) {
 	            $table->increments('id');
 				$table->string('name');
 				$table->string('slug')->unique();
@@ -79,9 +96,10 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
 	    	Schema::create('voyager_poll_questions', function (Blueprint $table) {
 	            $table->increments('id');
 	            $table->integer('poll_id')->unsigned()->index();
-	            $table->foreign('poll_id')->references('id')->on('voyager_poll')->onDelete('cascade');
+	            $table->foreign('poll_id')->references('id')->on('voyager_polls')->onDelete('cascade');
 				$table->string('question');
 				$table->string('image')->nullable();
+				$table->integer('order')->default(1);
 				$table->timestamps();
 	        });
 
@@ -92,6 +110,7 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
 	            $table->string('answer');
 	            $table->string('image')->nullable();
 	            $table->integer('votes')->default(0);
+	            $table->integer('order')->default(1);
 	            $table->timestamps();
 	        });
 

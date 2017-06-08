@@ -1,9 +1,14 @@
 <template>
 	<div>
-		<template v-for="poll in polls">
-			<h2>{{ poll.question }}</h2>
-			<div class="radio" v-for="answer in poll.answers">
-			  <label><input type="radio" name="answer">{{ answer }}</label>
+		<h1 v-if="poll.name">{{ poll.name }}</h1>
+		<h1 v-else="poll.name">Name of Your Poll</h1>
+		<template v-for="(question, index) in poll.questions">
+			<h2 v-if="question.question">{{ question.question }}</h2>
+			<h2 v-else="question.question">Question {{ index+1 }}</h2>
+			
+			<div class="radio" v-for="(answer, answer_index) in question.answers">
+			  <label v-if="answer"><input type="radio" name="answer">{{ answer }}</label>
+			  <label v-else><input type="radio" name="answer">Answer {{ answer_index+1 }}</label>
 			</div>
 		</template>
 	</div>
@@ -14,22 +19,9 @@
 </style>
 
 <script>
-
-	
-
 	module.exports = {
 
-		props: ['polls'],
+		props: ['poll'],
 
-		data: function(){
-			return {
-				greeting: 'Hello'
-			}
-		},
-		watch : {
-			poll: function(newVal){
-				this.poll = newVal;
-			}
-		}
 	}
 </script>

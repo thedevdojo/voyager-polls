@@ -1,6 +1,7 @@
 <template>
 	<div id="poll-question">
-		<p class="delete-question">
+		<i class="voyager-handle move-question"></i>
+		<p class="delete-question" v-on:click="$emit('delete-question')">
 			Remove Question
 			<i class="voyager-trash"></i>
 		</p>
@@ -34,6 +35,20 @@
 	    border-radius: 5px;
 	    margin-bottom:20px;
 	    position:relative;
+	}
+
+	#poll-question i.voyager-handle.move-question{
+		position: absolute;
+	    top: 0px;
+	    left: 0px;
+	    background: #f9f9f9;
+	    color: #ccc;
+	    padding: 4px 7px;
+	    cursor: move;
+	    border-bottom-right-radius: 10px;
+	    border-top-left-radius: 3px;
+	    padding-top: 5px;
+	    padding-bottom: 3px;
 	}
 
 	.delete-question{
