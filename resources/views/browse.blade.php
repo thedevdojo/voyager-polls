@@ -15,7 +15,7 @@
 
 <div class="padding-top">
 
-	<div id="vueify">	
+	<div id="app">	
 
 		<h1 class="page-title">
         	<i class="voyager-bar-chart"></i> Polls
@@ -52,10 +52,10 @@
 	                            			<td>{{ Carbon\Carbon::parse($poll->created_at)->toDayDateTimeString() }}</td>
 	                            			<td>{{ Carbon\Carbon::parse($poll->modified_at)->toDayDateTimeString() }}</td>
 	                            			<td>
-	                            				<div class="btn-sm btn-danger pull-right delete" data-id="1" id="delete-1">
+	                            				<div class="btn-sm btn-danger pull-right delete" data-id="{{ $poll->id }}" id="delete-1">
 	                                                <i class="voyager-trash"></i> Delete
 	                                            </div>
-	                                            <a href="http://poll.dev/admin/users/1/edit" class="btn-sm btn-primary pull-right edit">
+	                                            <a href="{{ url('/admin/polls') . '/' . $poll->id . '/edit' }}" class="btn-sm btn-primary pull-right edit">
 	                                                <i class="voyager-edit"></i> Edit
 	                                            </a>
 	                                            <a href="http://poll.dev/admin/users/1" class="btn-sm btn-warning pull-right">
@@ -73,15 +73,31 @@
 						</div>
 					</div>
 
-					<p>test</p>
-					<poll-creator></poll-creator>
-
-					<div class="panel-body">
-
-					</div>
-
 			</div>
 		</div>
+
+		<div class="modal modal-danger fade" tabindex="-1" id="delete_modal" role="dialog">
+	        <div class="modal-dialog">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+	                                aria-hidden="true">&times;</span></button>
+	                    <h4 class="modal-title"><i class="voyager-trash"></i> Are you sure you want to delete
+	                        this Poll?</h4>
+	                </div>
+	                <div class="modal-footer">
+	                    <form action="/admin/polls/delete" id="delete_form" method="POST">
+	                        {{ method_field("DELETE") }}
+	                        {{ csrf_field() }}
+	                        <input type="hidden" value="" id="delete_id" name="id">
+	                        <input type="submit" class="btn btn-danger pull-right delete-confirm"
+	                                 value="Yes, delete this poll">
+	                    </form>
+	                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancel</button>
+	                </div>
+	            </div><!-- /.modal-content -->
+	        </div><!-- /.modal-dialog -->
+	    </div><!-- /.modal -->
 
 	</div>
 </div>
@@ -91,6 +107,15 @@
 
 @section('javascript')
 	<script>
-		<?php include(base_path('hooks/voyager-polls/app.js')); ?>
+		$('document').ready(function(){
+			$('td').on('click', '.delete', function (e) {
+	            var form = $('#delete_form')[0];
+
+	            $('#delete_id').val( $(this).data('id') );
+	            console.log(form.action);
+
+	            $('#delete_modal').modal('show');
+	        });
+		});
 	</script>
 @endsection

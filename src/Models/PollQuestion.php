@@ -10,6 +10,7 @@ class PollQuestion extends Model
     protected $fillable = ['poll_id', 'question', 'order'];
 
     public function answers(){
-    	return $this->hasMany('Hooks\VoyagerPolls\Models\PollAnswer', 'question_id');
+    	return $this->hasMany('Hooks\VoyagerPolls\Models\PollAnswer', 'question_id')->orderBy('order', 'ASC');
     }
+
 }

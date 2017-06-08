@@ -28,7 +28,7 @@
 						<div class="col-md-6">
 							<draggable v-model="poll.questions">
 		    					<transition-group>
-									<poll-question v-for="(this_poll, index) in poll.questions" :poll="this_poll" :index="index" :key="index" v-on:delete-question="deleteQuestion(index)"></poll-question>
+									<poll-question v-for="(question, index) in poll.questions" :question="question" :index="index" :key="index" v-on:delete-question="deleteQuestion(index)"></poll-question>
 								</transition-group>
 							</draggable>
 							<button class="btn btn-primary btn-question" @click="createNewQuestion"><i class="voyager-question"></i> Another Question +</button>
@@ -36,7 +36,7 @@
 
 	                    <div class="col-md-6">
 	                    	<label for="preview">Preview:</label>
-	                    	<poll-preview :poll="poll"></poll-preview>
+	                    	<poll :poll="poll"></poll>
 	                    </div>
 
 					</div>
@@ -93,9 +93,6 @@
 	var draggable = require('vuedraggable');
 	var axios = require('axios');
 	var slugify = require('slugify');
-	var newQuestionCopy = 'Create New Question';
-	var newQuestionLoadingCopy = '<span class="voyager-refresh"></span> Saving New Poll';
-	var updateQuestionCopy = 'Update Question';
 
 
 	module.exports = {
@@ -104,8 +101,13 @@
 
 		data: function(){
 			return {
-				saveCopy: newQuestionCopy,
+				newQuestionCopy : 'Create New Question',
+				newQuestionLoadingCopy: '<span class="voyager-refresh"></span> Saving New Poll',
+				updateQuestionCopy : 'Update Question',
+				saveCopy: '',
+				post_url: '',
 				poll: {
+					id: '',
 					name:'',
 					slug: '',
 					questions:[]
@@ -121,36 +123,59 @@
 		methods:{
 			newQuestion: function(){
 				return {
+					id:'',
 					question: '',
-					answers: ['', '', '']
+					answers: [
+						{ 'id': '', 'answer': '' },
+						{ 'id': '', 'answer': '' },
+						{ 'id': '', 'answer': '' }
+					]
 				}
 			},
 			createNewQuestion: function(){
 				this.poll.questions.push(this.newQuestion());
 			},
 			savePoll: function(){
-				this.saveCopy = newQuestionLoadingCopy;
-				axios.post(this.url + '/admin/polls/add', {
-					poll: this.poll
-				  })
-				  .then(function (response) {
-				    console.log(response);
-				    this.saveCopy = updateQuestionCopy;
-				  })
-				  .catch(function (error) {
-				  	this.saveCopy = newQuestionCopy;
-				    console.log(error);
-				  });
+				this.saveCopy = this.newQuestionLoadingCopy;
+				
+				var that = this;
+				axios.post(this.post_url, { poll: this.poll })
+					.then(function (response) {
+						if(response.data.status == "success"){
+							toastr.success(response.data.message);
+							that.saveCopy = that.updateQuestionCopy;
+							that.newQuestionCopy = that.updateQuestionCopy;
+							that.post_url = that.url + '/admin/polls/edit';
+							that.poll = response.data.poll;
+							history.replaceState(null, null, '/admin/polls/' + that.poll.id + '/edit');
+						} else {
+							toastr.error(response.data.message);
+							that.saveCopy = that.newQuestionCopy;
+						}
+						console.log(response);
+				    
+				  	})
+					.catch(function (error) {
+						that.saveCopy = that.newQuestionCopy;
+						toastr.error(error.message);
+					});
 			},
 			deleteQuestion: function(index){
 				this.poll.questions.splice(index, 1);
 			}
 		},
 		created: function(){
-			this.createNewQuestion();
+			console.log(this.edit_poll);
 			if(this.edit_poll){
-				this.poll = this.edit_poll;
+				this.poll = JSON.parse(this.edit_poll);
+				this.newQuestionCopy = this.updateQuestionCopy;
+				this.post_url = this.url + '/admin/polls/edit';
+			} else {
+				this.createNewQuestion();
+				this.post_url = this.url + '/admin/polls/add';
 			}
+
+			this.saveCopy = this.newQuestionCopy;
 		},
 		components: {
 			draggable:draggable,

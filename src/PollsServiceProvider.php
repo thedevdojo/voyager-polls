@@ -31,6 +31,8 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
         $router->get('polls/add', ['uses' => $namespacePrefix.'PollsController@add', 'as' => 'polls.add']);
     	$router->post('polls/add', ['uses' => $namespacePrefix.'PollsController@add_post', 'as' => 'polls.add.post']);
     	$router->get('polls/{id}/edit', ['uses' => $namespacePrefix.'PollsController@edit', 'as' => 'polls.edit']);
+    	$router->post('polls/edit', ['uses' => $namespacePrefix.'PollsController@edit_post', 'as' => 'polls.edit.post']);
+    	$router->delete('polls/delete', ['uses' => $namespacePrefix.'PollsController@delete', 'as' => 'polls.delete']);
     }
 
 	public function addPollsMenuItem(Menu $menu)

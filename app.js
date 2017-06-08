@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 51);
+/******/ 	return __webpack_require__(__webpack_require__.s = 53);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -606,7 +606,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
   ) }
 }
 
-var listToStyles = __webpack_require__(48)
+var listToStyles = __webpack_require__(50)
 
 /*
 type StyleObject = {
@@ -1429,10 +1429,10 @@ if (true) {
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-window.Vue = __webpack_require__(49);
-Vue.component('poll-question', __webpack_require__(41));
-Vue.component('poll-preview', __webpack_require__(40));
-Vue.component('poll-creator', __webpack_require__(39));
+window.Vue = __webpack_require__(51);
+Vue.component('poll-question', __webpack_require__(42));
+Vue.component('poll', __webpack_require__(43));
+Vue.component('poll-creator', __webpack_require__(41));
 
 var vm = new Vue({ el: '#app' });
 
@@ -2376,9 +2376,6 @@ module.exports = function spread(callback) {
 var draggable = __webpack_require__(10);
 var axios = __webpack_require__(12);
 var slugify = __webpack_require__(37);
-var newQuestionCopy = 'Create New Question';
-var newQuestionLoadingCopy = '<span class="voyager-refresh"></span> Saving New Poll';
-var updateQuestionCopy = 'Update Question';
 
 module.exports = {
 
@@ -2386,8 +2383,13 @@ module.exports = {
 
 	data: function data() {
 		return {
-			saveCopy: newQuestionCopy,
+			newQuestionCopy: 'Create New Question',
+			newQuestionLoadingCopy: '<span class="voyager-refresh"></span> Saving New Poll',
+			updateQuestionCopy: 'Update Question',
+			saveCopy: '',
+			post_url: '',
 			poll: {
+				id: '',
 				name: '',
 				slug: '',
 				questions: []
@@ -2402,23 +2404,34 @@ module.exports = {
 	methods: {
 		newQuestion: function newQuestion() {
 			return {
+				id: '',
 				question: '',
-				answers: ['', '', '']
+				answers: [{ 'id': '', 'answer': '' }, { 'id': '', 'answer': '' }, { 'id': '', 'answer': '' }]
 			};
 		},
 		createNewQuestion: function createNewQuestion() {
 			this.poll.questions.push(this.newQuestion());
 		},
 		savePoll: function savePoll() {
-			this.saveCopy = newQuestionLoadingCopy;
-			axios.post(this.url + '/admin/polls/add', {
-				poll: this.poll
-			}).then(function (response) {
+			this.saveCopy = this.newQuestionLoadingCopy;
+
+			var that = this;
+			axios.post(this.post_url, { poll: this.poll }).then(function (response) {
+				if (response.data.status == "success") {
+					toastr.success(response.data.message);
+					that.saveCopy = that.updateQuestionCopy;
+					that.newQuestionCopy = that.updateQuestionCopy;
+					that.post_url = that.url + '/admin/polls/edit';
+					that.poll = response.data.poll;
+					history.replaceState(null, null, '/admin/polls/' + that.poll.id + '/edit');
+				} else {
+					toastr.error(response.data.message);
+					that.saveCopy = that.newQuestionCopy;
+				}
 				console.log(response);
-				this.saveCopy = updateQuestionCopy;
 			}).catch(function (error) {
-				this.saveCopy = newQuestionCopy;
-				console.log(error);
+				that.saveCopy = that.newQuestionCopy;
+				toastr.error(error.message);
 			});
 		},
 		deleteQuestion: function deleteQuestion(index) {
@@ -2426,10 +2439,17 @@ module.exports = {
 		}
 	},
 	created: function created() {
-		this.createNewQuestion();
+		console.log(this.edit_poll);
 		if (this.edit_poll) {
-			this.poll = this.edit_poll;
+			this.poll = JSON.parse(this.edit_poll);
+			this.newQuestionCopy = this.updateQuestionCopy;
+			this.post_url = this.url + '/admin/polls/edit';
+		} else {
+			this.createNewQuestion();
+			this.post_url = this.url + '/admin/polls/add';
 		}
+
+		this.saveCopy = this.newQuestionCopy;
 	},
 	components: {
 		draggable: draggable
@@ -2438,37 +2458,6 @@ module.exports = {
 
 /***/ }),
 /* 31 */
-/***/ (function(module, exports) {
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-module.exports = {
-
-	props: ['poll']
-
-};
-
-/***/ }),
-/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //
@@ -2591,7 +2580,7 @@ var draggable = __webpack_require__(10);
 
 module.exports = {
 
-	props: ['poll', 'index'],
+	props: ['question', 'index'],
 
 	data: function data() {
 		return {};
@@ -2604,7 +2593,7 @@ module.exports = {
 	methods: {
 		newAnswer: function newAnswer() {
 			// Add a blank answer to the array
-			this.poll.answers.push('');
+			this.question.answers.push({ id: '', answer: '' });
 			this.$nextTick(function () {
 				var answers = this.$el.getElementsByClassName('answer');
 				answers[answers.length - 1].querySelector('input').focus();
@@ -2613,9 +2602,191 @@ module.exports = {
 
 		deleteAnswer: function deleteAnswer(index) {
 			if (index > -1) {
-				this.poll.answers.splice(index, 1);
+				this.question.answers.splice(index, 1);
+			}
+		},
+		newAnswerEnter: function newAnswerEnter(id) {
+			if (this.question.answers.length == id + 1) {
+				this.newAnswer();
 			}
 		}
+	}
+
+};
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+var Sticky = __webpack_require__(40);
+
+module.exports = {
+
+	props: ['poll'],
+
+	data: function data() {
+		return {
+			scrolled: 0,
+			current_index: 1,
+			questionsInnerStyles: {
+				marginLeft: '0%',
+				width: '100%'
+			},
+			inner_offset: 0
+		};
+	},
+	methods: {
+		next: function next() {
+			if (this.current_index < this.poll.questions.length) {
+				this.inner_offset -= 100;
+				this.current_index += 1;
+			}
+		},
+		prev: function prev() {
+			if (this.current_index != 1) {
+				this.inner_offset += 100;
+				this.current_index -= 1;
+			}
+		},
+		computeQuestionsInner: function computeQuestionsInner() {
+			this.questionsInnerStyles.marginLeft = this.inner_offset + '%';
+			this.questionsInnerStyles.width = 100 * this.poll.questions.length + '%';
+		}
+	},
+	watch: {
+		inner_offset: function inner_offset() {
+			this.computeQuestionsInner();
+		},
+		'poll.questions': function pollQuestions() {
+			this.computeQuestionsInner();
+		}
+	},
+	created: function created() {
+		this.computeQuestionsInner();
+		var sticky = new Sticky('#preview');
 	}
 
 };
@@ -2632,7 +2803,7 @@ exports.push([module.i, "\n#poll-question{\n\tpadding: 30px;\n    border: 1px so
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(2)();
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n#questions {\n\t  width: 100%;\n\t  overflow: hidden;\n}\n#questions_inner{\n\t\t-webkit-transform: translateZ(0);\n\t\ttransform: translateZ(0);\n\t\ttransition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000);\n\t\ttransition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000);\n}\n#question{\n    \tfloat: left;\n}\n.panel-title{\n\t\tborder-bottom: 1px solid #f1f1f1;\n\t    padding-left:20px;\n}\n.panel-body{\n\t\tpadding:20px;\n}\n.poll_num{\n\t\tfloat:left;\n}\n.poll_num p{\n\t\tline-height: 45px;\n\t    margin-bottom: 0px;\n\t    margin-left: 10px;\n\t    font-size:11px;\n\t    font-weight: 400;\n\t    text-transform: uppercase;\n\t    color: #bbb;\n}\n.poll_buttons{\n\t\tfloat:right;\n}\nh1{\n\t\tmargin-bottom: 0px;\n\t    font-size: 36px;\n\t    color: #444;\n\t    font-weight: 200;\n}\n.radio{\n\t\tmargin-left: 15px;\n    \tmargin-top: 20px;\n}\n.sticky{\n\t\ttop:0px !important;\n}\nh2{\n\t\tfont-weight:200;\n}\n#preview_container{\n\t\tmargin-top:-80px;\n}\n#preview{\n\t\ttop:0px !important;\n\t\tmargin-top:80px;\n}\n", ""]);
 
 /***/ }),
 /* 35 */
@@ -4448,15 +4619,495 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 /* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Sticky.js
+ * Library for sticky elements written in vanilla javascript. With this library you can easily set sticky elements on your website. It's also responsive.
+ *
+ * @version 1.2.0
+ * @author Rafal Galus <biuro@rafalgalus.pl>
+ * @website https://rgalus.github.io/sticky-js/
+ * @repo https://github.com/rgalus/sticky-js
+ * @license https://github.com/rgalus/sticky-js/blob/master/LICENSE
+ */
+
+var Sticky = function () {
+  /**
+   * Sticky instance constructor
+   * @constructor
+   * @param {string} selector - Selector which we can find elements
+   * @param {string} options - Global options for sticky elements (could be overwritten by data-{option}="" attributes)
+   */
+  function Sticky() {
+    var selector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    _classCallCheck(this, Sticky);
+
+    this.selector = selector;
+    this.elements = [];
+
+    this.version = '1.2.0';
+
+    this.vp = this.getViewportSize();
+    this.body = document.querySelector('body');
+
+    this.options = {
+      wrap: options.wrap || false,
+      marginTop: options.marginTop || 0,
+      stickyFor: options.stickyFor || 0,
+      stickyClass: options.stickyClass || null,
+      stickyContainer: options.stickyContainer || 'body'
+    };
+
+    this.updateScrollTopPosition = this.updateScrollTopPosition.bind(this);
+
+    this.updateScrollTopPosition();
+    window.addEventListener('load', this.updateScrollTopPosition);
+    window.addEventListener('scroll', this.updateScrollTopPosition);
+
+    this.run();
+  }
+
+  /**
+   * Function that waits for page to be fully loaded and then renders & activates every sticky element found with specified selector
+   * @function
+   */
+
+
+  Sticky.prototype.run = function run() {
+    var _this = this;
+
+    // wait for page to be fully loaded
+    var pageLoaded = setInterval(function () {
+      if (document.readyState === 'complete') {
+        clearInterval(pageLoaded);
+
+        var elements = document.querySelectorAll(_this.selector);
+        _this.forEach(elements, function (element) {
+          return _this.renderElement(element);
+        });
+      }
+    }, 10);
+  };
+
+  /**
+   * Function that assign needed variables for sticky element, that are used in future for calculations and other
+   * @function
+   * @param {node} element - Element to be rendered
+   */
+
+
+  Sticky.prototype.renderElement = function renderElement(element) {
+    var _this2 = this;
+
+    // create container for variables needed in future
+    element.sticky = {};
+
+    // set default variables
+    element.sticky.active = false;
+
+    element.sticky.marginTop = parseInt(element.getAttribute('data-margin-top')) || this.options.marginTop;
+    element.sticky.stickyFor = parseInt(element.getAttribute('data-sticky-for')) || this.options.stickyFor;
+    element.sticky.stickyClass = element.getAttribute('data-sticky-class') || this.options.stickyClass;
+    element.sticky.wrap = element.hasAttribute('data-sticky-wrap') ? true : this.options.wrap;
+    // @todo attribute for stickyContainer
+    // element.sticky.stickyContainer = element.getAttribute('data-sticky-container') || this.options.stickyContainer;
+    element.sticky.stickyContainer = this.options.stickyContainer;
+
+    element.sticky.container = this.getStickyContainer(element);
+    element.sticky.container.rect = this.getRectangle(element.sticky.container);
+
+    element.sticky.rect = this.getRectangle(element);
+
+    // fix when element is image that has not yet loaded and width, height = 0
+    if (element.tagName.toLowerCase() === 'img') {
+      element.onload = function () {
+        return element.sticky.rect = _this2.getRectangle(element);
+      };
+    }
+
+    if (element.sticky.wrap) {
+      this.wrapElement(element);
+    }
+
+    // activate rendered element
+    this.activate(element);
+  };
+
+  /**
+   * Wraps element into placeholder element
+   * @function
+   * @param {node} element - Element to be wrapped
+   */
+
+
+  Sticky.prototype.wrapElement = function wrapElement(element) {
+    element.insertAdjacentHTML('beforebegin', '<span></span>');
+    element.previousSibling.appendChild(element);
+  };
+
+  /**
+   * Function that activates element when specified conditions are met and then initalise events
+   * @function
+   * @param {node} element - Element to be activated
+   */
+
+
+  Sticky.prototype.activate = function activate(element) {
+    if (element.sticky.rect.top + element.sticky.rect.height < element.sticky.container.rect.top + element.sticky.container.rect.height && element.sticky.stickyFor < this.vp.width && !element.sticky.active) {
+      element.sticky.active = true;
+    }
+
+    if (this.elements.indexOf(element) < 0) {
+      this.elements.push(element);
+    }
+
+    if (!element.sticky.resizeEvent) {
+      this.initResizeEvents(element);
+      element.sticky.resizeEvent = true;
+    }
+
+    if (!element.sticky.scrollEvent) {
+      this.initScrollEvents(element);
+      element.sticky.scrollEvent = true;
+    }
+
+    this.setPosition(element);
+  };
+
+  /**
+   * Function which is adding onResizeEvents to window listener and assigns function to element as resizeListener
+   * @function
+   * @param {node} element - Element for which resize events are initialised
+   */
+
+
+  Sticky.prototype.initResizeEvents = function initResizeEvents(element) {
+    var _this3 = this;
+
+    element.sticky.resizeListener = function () {
+      return _this3.onResizeEvents(element);
+    };
+    window.addEventListener('resize', element.sticky.resizeListener);
+  };
+
+  /**
+   * Removes element listener from resize event
+   * @function
+   * @param {node} element - Element from which listener is deleted
+   */
+
+
+  Sticky.prototype.destroyResizeEvents = function destroyResizeEvents(element) {
+    window.removeEventListener('resize', element.sticky.resizeListener);
+  };
+
+  /**
+   * Function which is fired when user resize window. It checks if element should be activated or deactivated and then run setPosition function
+   * @function
+   * @param {node} element - Element for which event function is fired
+   */
+
+
+  Sticky.prototype.onResizeEvents = function onResizeEvents(element) {
+    this.vp = this.getViewportSize();
+
+    element.sticky.rect = this.getRectangle(element);
+    element.sticky.container.rect = this.getRectangle(element.sticky.container);
+
+    if (element.sticky.rect.top + element.sticky.rect.height < element.sticky.container.rect.top + element.sticky.container.rect.height && element.sticky.stickyFor < this.vp.width && !element.sticky.active) {
+      element.sticky.active = true;
+    } else if (element.sticky.rect.top + element.sticky.rect.height >= element.sticky.container.rect.top + element.sticky.container.rect.height || element.sticky.stickyFor >= this.vp.width && element.sticky.active) {
+      element.sticky.active = false;
+    }
+
+    this.setPosition(element);
+  };
+
+  /**
+   * Function which is adding onScrollEvents to window listener and assigns function to element as scrollListener
+   * @function
+   * @param {node} element - Element for which scroll events are initialised
+   */
+
+
+  Sticky.prototype.initScrollEvents = function initScrollEvents(element) {
+    var _this4 = this;
+
+    element.sticky.scrollListener = function () {
+      return _this4.onScrollEvents(element);
+    };
+    window.addEventListener('scroll', element.sticky.scrollListener);
+  };
+
+  /**
+   * Removes element listener from scroll event
+   * @function
+   * @param {node} element - Element from which listener is deleted
+   */
+
+
+  Sticky.prototype.destroyScrollEvents = function destroyScrollEvents(element) {
+    window.removeEventListener('scroll', element.sticky.scrollListener);
+  };
+
+  /**
+   * Function which is fired when user scroll window. If element is active, function is invoking setPosition function
+   * @function
+   * @param {node} element - Element for which event function is fired
+   */
+
+
+  Sticky.prototype.onScrollEvents = function onScrollEvents(element) {
+    if (element.sticky.active) {
+      this.setPosition(element);
+    }
+  };
+
+  /**
+   * Main function for the library. Here are some condition calculations and css appending for sticky element when user scroll window
+   * @function
+   * @param {node} element - Element that will be positioned if it's active
+   */
+
+
+  Sticky.prototype.setPosition = function setPosition(element) {
+    this.css(element, { position: '', width: '', top: '', left: '' });
+
+    if (this.vp.height < element.sticky.rect.height || !element.sticky.active) {
+      return;
+    }
+
+    if (!element.sticky.rect.width) {
+      element.sticky.rect = this.getRectangle(element);
+    }
+
+    if (element.sticky.wrap) {
+      this.css(element.parentNode, {
+        display: 'block',
+        width: element.sticky.rect.width + 'px',
+        height: element.sticky.rect.height + 'px'
+      });
+    }
+
+    if (element.sticky.rect.top === 0 && element.sticky.container === this.body) {
+      this.css(element, {
+        position: 'fixed',
+        top: element.sticky.rect.top + 'px',
+        left: element.sticky.rect.left + 'px',
+        width: element.sticky.rect.width + 'px'
+      });
+    } else if (this.scrollTop > element.sticky.rect.top - element.sticky.marginTop) {
+      this.css(element, {
+        position: 'fixed',
+        width: element.sticky.rect.width + 'px',
+        left: element.sticky.rect.left + 'px'
+      });
+
+      if (this.scrollTop + element.sticky.rect.height + element.sticky.marginTop > element.sticky.container.rect.top + element.sticky.container.offsetHeight) {
+
+        if (element.sticky.stickyClass) {
+          element.classList.remove(element.sticky.stickyClass);
+        }
+
+        this.css(element, {
+          top: element.sticky.container.rect.top + element.sticky.container.offsetHeight - (this.scrollTop + element.sticky.rect.height) + 'px' });
+      } else {
+        if (element.sticky.stickyClass) {
+          element.classList.add(element.sticky.stickyClass);
+        }
+
+        this.css(element, { top: element.sticky.marginTop + 'px' });
+      }
+    } else {
+      if (element.sticky.stickyClass) {
+        element.classList.remove(element.sticky.stickyClass);
+      }
+
+      this.css(element, { position: '', width: '', top: '', left: '' });
+
+      if (element.sticky.wrap) {
+        this.css(element.parentNode, { display: '', width: '', height: '' });
+      }
+    }
+  };
+
+  /**
+   * Function that updates element sticky rectangle (with sticky container), then activate or deactivate element, then update position if it's active
+   * @function
+   */
+
+
+  Sticky.prototype.update = function update() {
+    var _this5 = this;
+
+    this.forEach(this.elements, function (element) {
+      element.sticky.rect = _this5.getRectangle(element);
+      element.sticky.container.rect = _this5.getRectangle(element.sticky.container);
+
+      _this5.activate(element);
+      _this5.setPosition(element);
+    });
+  };
+
+  /**
+   * Destroys sticky element, remove listeners
+   * @function
+   */
+
+
+  Sticky.prototype.destroy = function destroy() {
+    var _this6 = this;
+
+    this.forEach(this.elements, function (element) {
+      _this6.destroyResizeEvents(element);
+      _this6.destroyScrollEvents(element);
+      delete element.sticky;
+    });
+  };
+
+  /**
+   * Function that returns container element in which sticky element is stuck (if is not specified, then it's stuck to body)
+   * @function
+   * @param {node} element - Element which sticky container are looked for
+   * @return {node} element - Sticky container
+   */
+
+
+  Sticky.prototype.getStickyContainer = function getStickyContainer(element) {
+    var container = element.parentNode;
+
+    while (!container.hasAttribute('data-sticky-container') && !container.parentNode.querySelector(element.sticky.stickyContainer) && container !== this.body) {
+      container = container.parentNode;
+    }
+
+    return container;
+  };
+
+  /**
+   * Function that returns element rectangle & position (width, height, top, left)
+   * @function
+   * @param {node} element - Element which position & rectangle are returned
+   * @return {object}
+   */
+
+
+  Sticky.prototype.getRectangle = function getRectangle(element) {
+    this.css(element, { position: '', width: '', top: '', left: '' });
+
+    var width = Math.max(element.offsetWidth, element.clientWidth, element.scrollWidth);
+    var height = Math.max(element.offsetHeight, element.clientHeight, element.scrollHeight);
+
+    var top = 0;
+    var left = 0;
+
+    do {
+      top += element.offsetTop || 0;
+      left += element.offsetLeft || 0;
+      element = element.offsetParent;
+    } while (element);
+
+    return { top: top, left: left, width: width, height: height };
+  };
+
+  /**
+   * Function that returns viewport dimensions
+   * @function
+   * @return {object}
+   */
+
+
+  Sticky.prototype.getViewportSize = function getViewportSize() {
+    return {
+      width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+      height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
+    };
+  };
+
+  /**
+   * Function that updates window scroll position
+   * @function
+   * @return {number}
+   */
+
+
+  Sticky.prototype.updateScrollTopPosition = function updateScrollTopPosition() {
+    this.scrollTop = (window.pageYOffset || document.scrollTop) - (document.clientTop || 0) || 0;
+  };
+
+  /**
+   * Helper function for loops
+   * @helper
+   * @param {array}
+   * @param {function} callback - Callback function (no need for explanation)
+   */
+
+
+  Sticky.prototype.forEach = function forEach(array, callback) {
+    for (var i = 0, len = array.length; i < len; i++) {
+      callback(array[i]);
+    }
+  };
+
+  /**
+   * Helper function to add/remove css properties for specified element.
+   * @helper
+   * @param {node} element - DOM element
+   * @param {object} properties - CSS properties that will be added/removed from specified element
+   */
+
+
+  Sticky.prototype.css = function css(element, properties) {
+    for (var property in properties) {
+      if (properties.hasOwnProperty(property)) {
+        element.style[property] = properties[property];
+      }
+    }
+  };
+
+  return Sticky;
+}();
+
+/**
+ * Export function that supports AMD, CommonJS and Plain Browser.
+ */
+
+
+(function (root, factory) {
+  if (true) {
+    module.exports = factory;
+  } else if (typeof define === 'function' && define.amd) {
+    define([], factory);
+  } else {
+    root.Sticky = factory;
+  }
+})(this, Sticky);
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var Sticky = __webpack_require__(39);
+
+module.exports = Sticky;
+
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
 
 /* styles */
-__webpack_require__(47)
+__webpack_require__(49)
 
 var Component = __webpack_require__(3)(
   /* script */
   __webpack_require__(30),
   /* template */
-  __webpack_require__(44),
+  __webpack_require__(46),
   /* scopeId */
   null,
   /* cssModules */
@@ -4483,56 +5134,18 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
-__webpack_require__(46)
+__webpack_require__(47)
 
 var Component = __webpack_require__(3)(
   /* script */
   __webpack_require__(31),
   /* template */
-  __webpack_require__(43),
-  /* scopeId */
-  null,
-  /* cssModules */
-  null
-)
-Component.options.__file = "/Users/tony/Sites/poll/hooks/voyager-polls/resources/assets/js/poll-preview.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] poll-preview.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4fc2b3e1", Component.options)
-  } else {
-    hotAPI.reload("data-v-4fc2b3e1", Component.options)
-  }
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-/* styles */
-__webpack_require__(45)
-
-var Component = __webpack_require__(3)(
-  /* script */
-  __webpack_require__(32),
-  /* template */
-  __webpack_require__(42),
+  __webpack_require__(44),
   /* scopeId */
   null,
   /* cssModules */
@@ -4559,7 +5172,45 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 42 */
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+__webpack_require__(48)
+
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(32),
+  /* template */
+  __webpack_require__(45),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "/Users/tony/Sites/poll/hooks/voyager-polls/resources/assets/js/poll.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] poll.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-8a7adf34", Component.options)
+  } else {
+    hotAPI.reload("data-v-8a7adf34", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -4588,8 +5239,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.poll.question),
-      expression: "poll.question"
+      value: (_vm.question.question),
+      expression: "question.question"
     }],
     staticClass: "form-control",
     attrs: {
@@ -4599,12 +5250,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "value": ""
     },
     domProps: {
-      "value": (_vm.poll.question)
+      "value": (_vm.question.question)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.poll.question = $event.target.value
+        _vm.question.question = $event.target.value
       }
     }
   })]), _vm._v(" "), _c('label', {
@@ -4613,13 +5264,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("Answers")]), _vm._v(" "), _c('draggable', {
     model: {
-      value: (_vm.poll.answers),
+      value: (_vm.question.answers),
       callback: function($$v) {
-        _vm.poll.answers = $$v
+        _vm.question.answers = $$v
       },
-      expression: "poll.answers"
+      expression: "question.answers"
     }
-  }, [_c('transition-group', _vm._l((_vm.poll.answers), function(answer, id) {
+  }, [_c('transition-group', _vm._l((_vm.question.answers), function(answer, id) {
     return _c('div', {
       key: id
     }, [_c('div', {
@@ -4630,8 +5281,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       directives: [{
         name: "model",
         rawName: "v-model",
-        value: (_vm.poll.answers[id]),
-        expression: "poll.answers[id]"
+        value: (_vm.question.answers[id].answer),
+        expression: "question.answers[id].answer"
       }],
       staticClass: "form-control",
       attrs: {
@@ -4640,18 +5291,16 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "placeholder": 'Add answer ' + (id + 1)
       },
       domProps: {
-        "value": (_vm.poll.answers[id])
+        "value": (_vm.question.answers[id].answer)
       },
       on: {
+        "keyup": function($event) {
+          if (!('button' in $event) && _vm._k($event.keyCode, "enter", 13)) { return null; }
+          _vm.newAnswerEnter(id)
+        },
         "input": function($event) {
           if ($event.target.composing) { return; }
-          var $$exp = _vm.poll.answers,
-            $$idx = id;
-          if (!Array.isArray($$exp)) {
-            _vm.poll.answers[id] = $event.target.value
-          } else {
-            $$exp.splice($$idx, 1, $event.target.value)
-          }
+          _vm.question.answers[id].answer = $event.target.value
         }
       }
     }), _vm._v(" "), _c('i', {
@@ -4680,12 +5329,43 @@ if (false) {
 }
 
 /***/ }),
-/* 43 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', [(_vm.poll.name) ? _c('h1', [_vm._v(_vm._s(_vm.poll.name))]) : _c('h1', [_vm._v("Name of Your Poll")]), _vm._v(" "), _vm._l((_vm.poll.questions), function(question, index) {
-    return [(question.question) ? _c('h2', [_vm._v(_vm._s(question.question))]) : _c('h2', [_vm._v("Question " + _vm._s(index + 1))]), _vm._v(" "), _vm._l((question.answers), function(answer, answer_index) {
+  return _c('div', {
+    attrs: {
+      "id": "preview_container",
+      "data-sticky-container": ""
+    }
+  }, [_c('div', {
+    staticClass: "panel panel-default",
+    attrs: {
+      "id": "preview",
+      "data-margin-top": "80"
+    }
+  }, [_c('div', {
+    staticClass: "panel-title"
+  }, [(_vm.poll.name) ? _c('h1', [_vm._v(_vm._s(_vm.poll.name))]) : _c('h1', [_vm._v("Name of Your Poll")])]), _vm._v(" "), _c('div', {
+    staticClass: "panel-body"
+  }, [_c('div', {
+    attrs: {
+      "id": "questions"
+    }
+  }, [_c('div', {
+    style: (_vm.questionsInnerStyles),
+    attrs: {
+      "id": "questions_inner"
+    }
+  }, _vm._l((_vm.poll.questions), function(question, index) {
+    return _c('div', {
+      style: ({
+        width: (100 / _vm.poll.questions.length) + '%'
+      }),
+      attrs: {
+        "id": "question"
+      }
+    }, [(question.question) ? _c('h2', [_vm._v(_vm._s(question.question))]) : _c('h2', [_vm._v("Question " + _vm._s(index + 1))]), _vm._v(" "), _vm._l((question.answers), function(answer, answer_index) {
       return _c('div', {
         staticClass: "radio"
       }, [(answer) ? _c('label', [_c('input', {
@@ -4693,25 +5373,53 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
           "type": "radio",
           "name": "answer"
         }
-      }), _vm._v(_vm._s(answer))]) : _c('label', [_c('input', {
+      }), _vm._v(_vm._s(answer.answer))]) : _c('label', [_c('input', {
         attrs: {
           "type": "radio",
           "name": "answer"
         }
       }), _vm._v("Answer " + _vm._s(answer_index + 1))])])
-    })]
-  })], 2)
+    })], 2)
+  }))])]), _vm._v(" "), _c('div', {
+    staticClass: "panel-footer"
+  }, [_c('div', {
+    staticClass: "poll_num"
+  }, [_c('p', [_vm._v("Question " + _vm._s(_vm.current_index) + " of " + _vm._s(_vm.poll.questions.length))])]), _vm._v(" "), _c('div', {
+    staticClass: "poll_buttons"
+  }, [_c('div', {
+    staticClass: "btn btn-default",
+    attrs: {
+      "id": "previous",
+      "disabled": this.current_index != 1 ? false : true
+    },
+    on: {
+      "click": _vm.prev
+    }
+  }, [_vm._v("Previous")]), _vm._v(" "), _c('div', {
+    staticClass: "btn btn-default",
+    attrs: {
+      "id": "next",
+      "disabled": this.current_index < this.poll.questions.length ? false : true
+    },
+    on: {
+      "click": _vm.next
+    }
+  }, [_vm._v("Next")])]), _vm._v(" "), _c('div', {
+    staticStyle: {
+      "clear": "both"
+    }
+  })])])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-4fc2b3e1", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-8a7adf34", module.exports)
   }
 }
 
 /***/ }),
-/* 44 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -4793,11 +5501,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       },
       expression: "poll.questions"
     }
-  }, [_c('transition-group', _vm._l((_vm.poll.questions), function(this_poll, index) {
+  }, [_c('transition-group', _vm._l((_vm.poll.questions), function(question, index) {
     return _c('poll-question', {
       key: index,
       attrs: {
-        "poll": this_poll,
+        "question": question,
         "index": index
       },
       on: {
@@ -4819,7 +5527,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "for": "preview"
     }
-  }, [_vm._v("Preview:")]), _vm._v(" "), _c('poll-preview', {
+  }, [_vm._v("Preview:")]), _vm._v(" "), _c('poll', {
     attrs: {
       "poll": _vm.poll
     }
@@ -4863,7 +5571,7 @@ if (false) {
 }
 
 /***/ }),
-/* 45 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -4889,7 +5597,7 @@ if(false) {
 }
 
 /***/ }),
-/* 46 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -4899,13 +5607,13 @@ var content = __webpack_require__(34);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(4)("032b4cb1", content, false);
+var update = __webpack_require__(4)("cc833cf8", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-4fc2b3e1\",\"scoped\":false,\"hasInlineConfig\":true}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./poll-preview.vue", function() {
-     var newContent = require("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-4fc2b3e1\",\"scoped\":false,\"hasInlineConfig\":true}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./poll-preview.vue");
+   module.hot.accept("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-8a7adf34\",\"scoped\":false,\"hasInlineConfig\":true}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./poll.vue", function() {
+     var newContent = require("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-8a7adf34\",\"scoped\":false,\"hasInlineConfig\":true}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./poll.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -4915,7 +5623,7 @@ if(false) {
 }
 
 /***/ }),
-/* 47 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -4941,7 +5649,7 @@ if(false) {
 }
 
 /***/ }),
-/* 48 */
+/* 50 */
 /***/ (function(module, exports) {
 
 /**
@@ -4974,12 +5682,12 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
-/* 49 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {/*!
- * Vue.js v2.3.3
+ * Vue.js v2.3.4
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
@@ -9408,7 +10116,7 @@ Object.defineProperty(Vue$3.prototype, '$ssrContext', {
   }
 });
 
-Vue$3.version = '2.3.3';
+Vue$3.version = '2.3.4';
 
 /*  */
 
@@ -9899,6 +10607,7 @@ function createPatchFunction (backend) {
   function initComponent (vnode, insertedVnodeQueue) {
     if (isDef(vnode.data.pendingInsert)) {
       insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert);
+      vnode.data.pendingInsert = null;
     }
     vnode.elm = vnode.componentInstance.$el;
     if (isPatchable(vnode)) {
@@ -14669,10 +15378,10 @@ Vue$3.compile = compileToFunctions;
 
 module.exports = Vue$3;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(52)))
 
 /***/ }),
-/* 50 */
+/* 52 */
 /***/ (function(module, exports) {
 
 var g;
@@ -14699,7 +15408,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 51 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(11);

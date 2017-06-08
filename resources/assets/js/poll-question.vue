@@ -7,16 +7,16 @@
 		</p>
 		<div class="form-group">
             <label for="name">Question {{ index+1 }}</label>
-            <input type="text" class="form-control" name="question" v-model="poll.question" placeholder="Add a question here" value="">
+            <input type="text" class="form-control" name="question" v-model="question.question" placeholder="Add a question here" value="">
         </div>
 
         <label for="answer">Answers</label>
-        <draggable v-model="poll.answers">
+        <draggable v-model="question.answers">
 		    <transition-group>
-		        <div v-for="(answer, id) in poll.answers" :key="id">
+		        <div v-for="(answer, id) in question.answers" :key="id">
 		            <div class="answer">
 		            	<i class="voyager-handle"></i>
-		            	<input type="text" name="answers[]" class="form-control" v-model="poll.answers[id]" :placeholder="'Add answer ' + (id+1)">
+		            	<input type="text" name="answers[]" class="form-control" v-model="question.answers[id].answer" :placeholder="'Add answer ' + (id+1)" @keyup.enter="newAnswerEnter(id)">
 		            	<i class="voyager-trash" @click="deleteAnswer(id)"></i>
 		            </div>
 		        </div>
@@ -118,7 +118,7 @@
 
 	module.exports = {
 
-		props: ['poll', 'index'],
+		props: ['question', 'index'],
 
 		data: function(){
 			return {
@@ -133,7 +133,7 @@
 		methods: {
 			newAnswer: function(){
 				// Add a blank answer to the array
-				this.poll.answers.push('');
+				this.question.answers.push({ id: '', answer: '' });
 				this.$nextTick(function () {
 					var answers = this.$el.getElementsByClassName('answer');
 					answers[answers.length-1].querySelector('input').focus();
@@ -142,7 +142,12 @@
 
 			deleteAnswer: function(index){
 				if (index > -1) {
-				    this.poll.answers.splice(index, 1);
+				    this.question.answers.splice(index, 1);
+				}
+			},
+			newAnswerEnter: function(id){
+				if(this.question.answers.length == id + 1){
+					this.newAnswer();
 				}
 			}
 		},
