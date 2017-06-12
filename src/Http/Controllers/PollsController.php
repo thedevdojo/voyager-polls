@@ -125,17 +125,26 @@ class PollsController extends \App\Http\Controllers\Controller
                     ['name' => $request->poll->name, 'slug' => $request->poll->slug ]
                 );
 
+            // delete any questions that have been removed
+            PollQuestion::where('poll_id', '=', $poll->id)->whereNotIn('id', array_pluck($request->poll->questions, 'id'))->delete();
+
             $question_order = 1;
             foreach($request->poll->questions as $questions){
 
                 $question = PollQuestion::updateOrCreate(['id' => $questions->id], ['poll_id' => $poll->id, 'question' => $questions->question, 'order' => $question_order]);
                 $question_order += 1;
 
+                // delete any answers that have been removed
+                PollAnswer::where('question_id', '=', $question->id)->whereNotIn('id', array_pluck($questions->answers, 'id'))->delete();
+
                 $answer_order = 1;
                 foreach($questions->answers as $answer){
-                    $answer = PollAnswer::updateOrCreate(['id' => $answer->id], ['question_id' => $question->id, 'answer' => $answer->answer, 'order' => $answer_order]);
-                    $answer_order += 1;
+                    if(!empty($answer->answer)){
+                        $answer = PollAnswer::updateOrCreate(['id' => $answer->id], ['question_id' => $question->id, 'answer' => $answer->answer, 'order' => $answer_order]);
+                        $answer_order += 1;
+                    }
                 }
+
             }
 
             $poll = $this->getPollData($poll->id);
