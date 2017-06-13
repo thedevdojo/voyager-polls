@@ -161,4 +161,9 @@ class PollsController extends \App\Http\Controllers\Controller
         }
         return $poll;
     }
+
+    public function json($slug){
+        $poll = Poll::where('slug', '=', $slug)->firstOrFail();
+        return response()->json($this->getPollData($poll->id));
+    }
 }

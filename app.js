@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 56);
+/******/ 	return __webpack_require__(__webpack_require__.s = 53);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,7 +73,7 @@
 "use strict";
 
 
-var bind = __webpack_require__(9);
+var bind = __webpack_require__(10);
 
 /*global toString:true*/
 
@@ -374,63 +374,6 @@ module.exports = {
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
-
-// this module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  scopeId,
-  cssModules
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  // inject cssModules
-  if (cssModules) {
-    var computed = Object.create(options.computed || null)
-    Object.keys(cssModules).forEach(function (key) {
-      var module = cssModules[key]
-      computed[key] = function () { return module }
-    })
-    options.computed = computed
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -454,10 +397,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(5);
+    adapter = __webpack_require__(6);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(5);
+    adapter = __webpack_require__(6);
   }
   return adapter;
 }
@@ -528,10 +471,10 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(37)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(36)))
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports) {
 
 /*
@@ -587,6 +530,63 @@ module.exports = function() {
 
 
 /***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+// this module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  scopeId,
+  cssModules
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  // inject cssModules
+  if (cssModules) {
+    var computed = Object.create(options.computed || null)
+    Object.keys(cssModules).forEach(function (key) {
+      var module = cssModules[key]
+      computed[key] = function () { return module }
+    })
+    options.computed = computed
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -606,7 +606,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
   ) }
 }
 
-var listToStyles = __webpack_require__(53)
+var listToStyles = __webpack_require__(50)
 
 /*
 type StyleObject = {
@@ -811,6 +811,12 @@ function applyToTag (styleElement, obj) {
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
+module.exports = __webpack_require__(13);
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
@@ -819,7 +825,7 @@ var settle = __webpack_require__(19);
 var buildURL = __webpack_require__(22);
 var parseHeaders = __webpack_require__(28);
 var isURLSameOrigin = __webpack_require__(26);
-var createError = __webpack_require__(8);
+var createError = __webpack_require__(9);
 var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(21);
 
 module.exports = function xhrAdapter(config) {
@@ -992,7 +998,7 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1018,7 +1024,7 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1030,7 +1036,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1054,7 +1060,7 @@ module.exports = function createError(message, config, code, response) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1072,7 +1078,7 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1413,7 +1419,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   }
 
 if (true) {
-    var Sortable = __webpack_require__(39);
+    var Sortable = __webpack_require__(38);
     module.exports = buildDraggable(Sortable);
   } else if (typeof define == "function" && define.amd) {
     define(['sortablejs'], function (Sortable) {
@@ -1426,21 +1432,15 @@ if (true) {
 })();
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-window.Vue = __webpack_require__(54);
-Vue.component('poll', __webpack_require__(45));
-Vue.component('poll-question', __webpack_require__(44));
-Vue.component('poll-creator', __webpack_require__(43));
-
-var vm = new Vue({ el: '#app' });
-
-/***/ }),
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(13);
+window.Vue = __webpack_require__(51);
+Vue.component('poll', __webpack_require__(43));
+Vue.component('poll-question', __webpack_require__(42));
+Vue.component('poll-creator', __webpack_require__(41));
+
+var vm = new Vue({ el: '#app' });
 
 /***/ }),
 /* 13 */
@@ -1450,9 +1450,9 @@ module.exports = __webpack_require__(13);
 
 
 var utils = __webpack_require__(0);
-var bind = __webpack_require__(9);
+var bind = __webpack_require__(10);
 var Axios = __webpack_require__(15);
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(1);
 
 /**
  * Create an instance of Axios
@@ -1485,9 +1485,9 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(6);
+axios.Cancel = __webpack_require__(7);
 axios.CancelToken = __webpack_require__(14);
-axios.isCancel = __webpack_require__(7);
+axios.isCancel = __webpack_require__(8);
 
 // Expose all/spread
 axios.all = function all(promises) {
@@ -1508,7 +1508,7 @@ module.exports.default = axios;
 "use strict";
 
 
-var Cancel = __webpack_require__(6);
+var Cancel = __webpack_require__(7);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -1572,7 +1572,7 @@ module.exports = CancelToken;
 "use strict";
 
 
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(1);
 var utils = __webpack_require__(0);
 var InterceptorManager = __webpack_require__(16);
 var dispatchRequest = __webpack_require__(17);
@@ -1725,8 +1725,8 @@ module.exports = InterceptorManager;
 
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(20);
-var isCancel = __webpack_require__(7);
-var defaults = __webpack_require__(2);
+var isCancel = __webpack_require__(8);
+var defaults = __webpack_require__(1);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -1835,7 +1835,7 @@ module.exports = function enhanceError(error, config, code, response) {
 "use strict";
 
 
-var createError = __webpack_require__(8);
+var createError = __webpack_require__(9);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -2278,8 +2278,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 30 */,
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //
@@ -2374,9 +2373,9 @@ module.exports = function spread(callback) {
 //
 //
 
-var draggable = __webpack_require__(10);
-var axios = __webpack_require__(12);
-var slugify = __webpack_require__(38);
+var draggable = __webpack_require__(11);
+var axios = __webpack_require__(5);
+var slugify = __webpack_require__(37);
 
 module.exports = {
 
@@ -2429,7 +2428,6 @@ module.exports = {
 					toastr.error(response.data.message);
 					that.saveCopy = that.newQuestionCopy;
 				}
-				console.log(response);
 			}).catch(function (error) {
 				that.saveCopy = that.newQuestionCopy;
 				toastr.error(error.message);
@@ -2440,7 +2438,6 @@ module.exports = {
 		}
 	},
 	created: function created() {
-		console.log(this.edit_poll);
 		if (this.edit_poll) {
 			this.poll = JSON.parse(this.edit_poll);
 			this.newQuestionCopy = this.updateQuestionCopy;
@@ -2455,6 +2452,164 @@ module.exports = {
 	components: {
 		draggable: draggable
 	}
+};
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+var draggable = __webpack_require__(11);
+
+module.exports = {
+
+	props: ['question', 'index'],
+
+	data: function data() {
+		return {};
+	},
+
+	components: {
+		draggable: draggable
+	},
+
+	methods: {
+		newAnswer: function newAnswer() {
+			// Add a blank answer to the array
+			this.question.answers.push({ id: '', answer: '' });
+			this.$nextTick(function () {
+				var answers = this.$el.getElementsByClassName('answer');
+				answers[answers.length - 1].querySelector('input').focus();
+			});
+		},
+
+		deleteAnswer: function deleteAnswer(index) {
+			if (index > -1) {
+				this.question.answers.splice(index, 1);
+			}
+		},
+		newAnswerEnter: function newAnswerEnter(id) {
+			if (this.question.answers.length == id + 1) {
+				this.newAnswer();
+			}
+		}
+	}
+
 };
 
 /***/ }),
@@ -2575,164 +2730,6 @@ module.exports = {
 //
 //
 //
-
-
-var draggable = __webpack_require__(10);
-
-module.exports = {
-
-	props: ['question', 'index'],
-
-	data: function data() {
-		return {};
-	},
-
-	components: {
-		draggable: draggable
-	},
-
-	methods: {
-		newAnswer: function newAnswer() {
-			// Add a blank answer to the array
-			this.question.answers.push({ id: '', answer: '' });
-			this.$nextTick(function () {
-				var answers = this.$el.getElementsByClassName('answer');
-				answers[answers.length - 1].querySelector('input').focus();
-			});
-		},
-
-		deleteAnswer: function deleteAnswer(index) {
-			if (index > -1) {
-				this.question.answers.splice(index, 1);
-			}
-		},
-		newAnswerEnter: function newAnswerEnter(id) {
-			if (this.question.answers.length == id + 1) {
-				this.newAnswer();
-			}
-		}
-	}
-
-};
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -2742,11 +2739,12 @@ module.exports = {
 //
 //
 
-var Sticky = __webpack_require__(41);
+var Sticky = __webpack_require__(40);
+var axios = __webpack_require__(5);
 
 module.exports = {
 
-	props: ['poll'],
+	props: ['slug'],
 
 	data: function data() {
 		return {
@@ -2756,7 +2754,15 @@ module.exports = {
 				marginLeft: '0%',
 				width: '100%'
 			},
-			inner_offset: 0
+			poll: {
+				questions: {
+					id: '',
+					question: '',
+					answers: [{ 'id': '', 'answer': '' }, { 'id': '', 'answer': '' }, { 'id': '', 'answer': '' }]
+				}
+			},
+			inner_offset: 0,
+			loaded: false
 		};
 	},
 	methods: {
@@ -2788,33 +2794,41 @@ module.exports = {
 	created: function created() {
 		this.computeQuestionsInner();
 		var sticky = new Sticky('#preview');
+		var that = this;
+		axios.get('/admin/polls/' + this.slug + '.json').then(function (response) {
+			that.loaded = true;
+			that.poll = response.data;
+			console.log(response);
+		}).catch(function (error) {
+			console.log(error.message);
+		});
 	}
 
 };
 
 /***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)();
+exports.push([module.i, "\n#poll-question{\n\tpadding: 30px;\n    border: 1px solid #f1f1f1;\n    border-radius: 5px;\n    margin-bottom:20px;\n    position:relative;\n}\n#poll-question i.voyager-handle.move-question{\n\tposition: absolute;\n    top: 0px;\n    left: 0px;\n    background: #f9f9f9;\n    color: #ccc;\n    padding: 4px 7px;\n    cursor: move;\n    border-bottom-right-radius: 10px;\n    border-top-left-radius: 3px;\n    padding-top: 5px;\n    padding-bottom: 3px;\n}\n.delete-question{\n\tposition: absolute;\n    right: 6px;\n    bottom: -15px;\n    border-top-right-radius: 3px;\n    border-bottom-left-radius: 3px;\n    padding: 10px;\n    color: #E74C3C;\n    cursor: pointer;\n    font-size:10px;\n}\n.delete-question i{\n\tfont-size:14px;\n\tfloat:right;\n\tposition:relative;\n\tleft:5px;\n\ttop:-2px;\n}\n.answer{\n\tposition:relative;\n\tpadding-bottom:10px;\n}\n.answer i{\n\tposition: absolute;\n    top: 1px;\n    height: 32px;\n    background: #f9f9f9;\n    width: 32px;\n    text-align: center;\n    line-height: 37px;\n    border: 0px;\n    border-right: 0px;\n    cursor: move;\n}\n.answer i.voyager-handle{\n\tleft: 1px;\n\tborder-top-left-radius: 3px;\n    border-bottom-left-radius: 3px;\n}\n.answer i.voyager-trash{\n\tright:1px;\n\tbackground:#e74c3c;\n\tborder-top-right-radius: 3px;\n\tborder-bottom-right-radius:3px;\n\tcolor:#fff;\n\tcursor:pointer;\n}\n.answer input{\n\twidth:100%;\n\tpadding-left:40px;\n}\n.btn-new i{\n\tposition:relative;\n\ttop:2px;\n}\n\n", ""]);
+
+/***/ }),
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(3)();
-exports.push([module.i, "\n#poll-question{\n\tpadding: 30px;\n    border: 1px solid #f1f1f1;\n    border-radius: 5px;\n    margin-bottom:20px;\n    position:relative;\n}\n#poll-question i.voyager-handle.move-question{\n\tposition: absolute;\n    top: 0px;\n    left: 0px;\n    background: #f9f9f9;\n    color: #ccc;\n    padding: 4px 7px;\n    cursor: move;\n    border-bottom-right-radius: 10px;\n    border-top-left-radius: 3px;\n    padding-top: 5px;\n    padding-bottom: 3px;\n}\n.delete-question{\n\tposition: absolute;\n    right: 6px;\n    bottom: -15px;\n    border-top-right-radius: 3px;\n    border-bottom-left-radius: 3px;\n    padding: 10px;\n    color: #E74C3C;\n    cursor: pointer;\n    font-size:10px;\n}\n.delete-question i{\n\tfont-size:14px;\n\tfloat:right;\n\tposition:relative;\n\tleft:5px;\n\ttop:-2px;\n}\n.answer{\n\tposition:relative;\n\tpadding-bottom:10px;\n}\n.answer i{\n\tposition: absolute;\n    top: 1px;\n    height: 32px;\n    background: #f9f9f9;\n    width: 32px;\n    text-align: center;\n    line-height: 37px;\n    border: 0px;\n    border-right: 0px;\n    cursor: move;\n}\n.answer i.voyager-handle{\n\tleft: 1px;\n\tborder-top-left-radius: 3px;\n    border-bottom-left-radius: 3px;\n}\n.answer i.voyager-trash{\n\tright:1px;\n\tbackground:#e74c3c;\n\tborder-top-right-radius: 3px;\n\tborder-bottom-right-radius:3px;\n\tcolor:#fff;\n\tcursor:pointer;\n}\n.answer input{\n\twidth:100%;\n\tpadding-left:40px;\n}\n.btn-new i{\n\tposition:relative;\n\ttop:2px;\n}\n\n", ""]);
+exports = module.exports = __webpack_require__(2)();
+exports.push([module.i, "\n#questions {\n\t  width: 100%;\n\t  overflow: hidden;\n}\n#questions_inner{\n\t\t-webkit-transform: translateZ(0);\n\t\ttransform: translateZ(0);\n\t\ttransition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000);\n\t\ttransition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000);\n}\n#question{\n    \tfloat: left;\n}\n.panel-title{\n\t\tborder-bottom: 1px solid #f1f1f1;\n\t    padding-left:20px;\n}\n.panel-body{\n\t\tpadding:20px;\n}\n.poll_num{\n\t\tfloat:left;\n}\n.poll_num p{\n\t\tline-height: 45px;\n\t    margin-bottom: 0px;\n\t    margin-left: 10px;\n\t    font-size:11px;\n\t    font-weight: 400;\n\t    text-transform: uppercase;\n\t    color: #bbb;\n}\n.poll_buttons{\n\t\tfloat:right;\n}\nh1{\n\t\tmargin-bottom: 0px;\n\t    font-size: 36px;\n\t    color: #444;\n\t    font-weight: 200;\n}\n.radio{\n\t\tmargin-left: 15px;\n    \tmargin-top: 20px;\n}\n.sticky{\n\t\ttop:0px !important;\n}\nh2{\n\t\tfont-weight:200;\n}\n#preview_container{\n\t\tmargin-top:-80px;\n}\n#preview{\n\t\ttop:0px !important;\n\t\tmargin-top:80px;\n}\n", ""]);
 
 /***/ }),
 /* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(3)();
-exports.push([module.i, "\n#questions {\n\t  width: 100%;\n\t  overflow: hidden;\n}\n#questions_inner{\n\t\t-webkit-transform: translateZ(0);\n\t\ttransform: translateZ(0);\n\t\ttransition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000);\n\t\ttransition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000);\n}\n#question{\n    \tfloat: left;\n}\n.panel-title{\n\t\tborder-bottom: 1px solid #f1f1f1;\n\t    padding-left:20px;\n}\n.panel-body{\n\t\tpadding:20px;\n}\n.poll_num{\n\t\tfloat:left;\n}\n.poll_num p{\n\t\tline-height: 45px;\n\t    margin-bottom: 0px;\n\t    margin-left: 10px;\n\t    font-size:11px;\n\t    font-weight: 400;\n\t    text-transform: uppercase;\n\t    color: #bbb;\n}\n.poll_buttons{\n\t\tfloat:right;\n}\nh1{\n\t\tmargin-bottom: 0px;\n\t    font-size: 36px;\n\t    color: #444;\n\t    font-weight: 200;\n}\n.radio{\n\t\tmargin-left: 15px;\n    \tmargin-top: 20px;\n}\n.sticky{\n\t\ttop:0px !important;\n}\nh2{\n\t\tfont-weight:200;\n}\n#preview_container{\n\t\tmargin-top:-80px;\n}\n#preview{\n\t\ttop:0px !important;\n\t\tmargin-top:80px;\n}\n", ""]);
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(3)();
+exports = module.exports = __webpack_require__(2)();
 exports.push([module.i, "\n#poll_name, #poll_slug{\n\t\tpadding-bottom:30px;\n\t\tmargin-bottom:30px;\n\t\tborder-bottom:1px solid #f1f1f1;\n}\n#poll_name input, #poll_slug input{\n\t\tfont-size: 20px;\n    \tpadding: 30px 20px;\n}\n.btn-question{\n\t\tmargin-top:20px;\n\t\tdisplay:block;\n\t\twidth:auto;\n\t\tmargin:20px auto;\n}\n.voyager-refresh{\n\t\t-webkit-animation: spin 0.6s infinite linear;\n\t    animation: spin 0.6s infinite linear;\n\t\tdisplay: inline-block;\n\t    width: 18px;\n\t    height: auto;\n\t    -webkit-transform-origin: 8px 9px;\n\t            transform-origin: 8px 9px;\n\t    position: relative;\n\t    top: 2px;\n}\n.btn-question i{\n\t\tposition:relative;\n\t\ttop:2px;\n}\n", ""]);
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -3004,7 +3018,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -3116,7 +3130,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
@@ -4617,7 +4631,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -5087,29 +5101,28 @@ var Sticky = function () {
 })(this, Sticky);
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var Sticky = __webpack_require__(40);
+var Sticky = __webpack_require__(39);
 
 module.exports = Sticky;
 
 
 /***/ }),
-/* 42 */,
-/* 43 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
-__webpack_require__(52)
+__webpack_require__(49)
 
-var Component = __webpack_require__(1)(
+var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(31),
+  __webpack_require__(30),
   /* template */
-  __webpack_require__(49),
+  __webpack_require__(46),
   /* scopeId */
   null,
   /* cssModules */
@@ -5136,18 +5149,18 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 44 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
-__webpack_require__(50)
+__webpack_require__(47)
 
-var Component = __webpack_require__(1)(
+var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(32),
+  __webpack_require__(31),
   /* template */
-  __webpack_require__(46),
+  __webpack_require__(44),
   /* scopeId */
   null,
   /* cssModules */
@@ -5174,18 +5187,18 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 45 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
-__webpack_require__(51)
+__webpack_require__(48)
 
-var Component = __webpack_require__(1)(
+var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(33),
+  __webpack_require__(32),
   /* template */
-  __webpack_require__(48),
+  __webpack_require__(45),
   /* scopeId */
   null,
   /* cssModules */
@@ -5212,7 +5225,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 46 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -5331,12 +5344,11 @@ if (false) {
 }
 
 /***/ }),
-/* 47 */,
-/* 48 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
+  return (_vm.loaded) ? _c('div', {
     attrs: {
       "id": "preview_container",
       "data-sticky-container": ""
@@ -5411,7 +5423,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticStyle: {
       "clear": "both"
     }
-  })])])])
+  })])])]) : _vm._e()
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -5422,7 +5434,7 @@ if (false) {
 }
 
 /***/ }),
-/* 49 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -5532,7 +5544,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("Preview:")]), _vm._v(" "), _c('poll', {
     attrs: {
-      "poll": _vm.poll
+      "slug": _vm.poll.slug
     }
   })], 1)]), _vm._v(" "), _c('div', {
     staticClass: "panel-footer"
@@ -5574,13 +5586,13 @@ if (false) {
 }
 
 /***/ }),
-/* 50 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(34);
+var content = __webpack_require__(33);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -5600,13 +5612,13 @@ if(false) {
 }
 
 /***/ }),
-/* 51 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(35);
+var content = __webpack_require__(34);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -5626,13 +5638,13 @@ if(false) {
 }
 
 /***/ }),
-/* 52 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(36);
+var content = __webpack_require__(35);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -5652,7 +5664,7 @@ if(false) {
 }
 
 /***/ }),
-/* 53 */
+/* 50 */
 /***/ (function(module, exports) {
 
 /**
@@ -5685,7 +5697,7 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
-/* 54 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15381,10 +15393,10 @@ Vue$3.compile = compileToFunctions;
 
 module.exports = Vue$3;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(55)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(52)))
 
 /***/ }),
-/* 55 */
+/* 52 */
 /***/ (function(module, exports) {
 
 var g;
@@ -15411,10 +15423,10 @@ module.exports = g;
 
 
 /***/ }),
-/* 56 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(11);
+module.exports = __webpack_require__(12);
 
 
 /***/ })

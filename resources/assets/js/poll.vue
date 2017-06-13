@@ -1,5 +1,5 @@
 <template>
-	<div id="preview_container" data-sticky-container>
+	<div id="preview_container" v-if="loaded" data-sticky-container>
 		<div class="panel panel-default" id="preview" data-margin-top="80">
 			<div class="panel-title">
 				<h1 v-if="poll.name">{{ poll.name }}</h1>
@@ -122,10 +122,11 @@
 
 <script>
 	var Sticky = require('sticky-js');
+	var axios = require('axios');
 
 	module.exports = {
 
-		props: ['poll'],
+		props: ['slug'],
 
 		data: function(){
 			return {
@@ -135,7 +136,19 @@
 					marginLeft: '0%', 
 					width: '100%'
 				},
-				inner_offset: 0
+				poll: {
+					questions:{
+						id:'',
+						question: '',
+						answers: [
+							{ 'id': '', 'answer': '' },
+							{ 'id': '', 'answer': '' },
+							{ 'id': '', 'answer': '' }
+						]
+					}
+				},
+				inner_offset: 0,
+				loaded: false
 			}
 		},
 		methods: {
@@ -167,6 +180,16 @@
 		created: function(){
 			this.computeQuestionsInner();
 			var sticky = new Sticky('#preview');
+			var that = this;
+			axios.get('/admin/polls/' + this.slug + '.json')
+					.then(function (response) {
+						that.loaded = true;
+						that.poll = response.data;
+						console.log(response);
+					})
+					.catch(function (error) {
+						console.log(error.message);
+					});
 		}
 
 	}

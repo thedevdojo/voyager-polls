@@ -36,7 +36,7 @@
 
 	                    <div class="col-md-6">
 	                    	<label for="preview">Preview:</label>
-	                    	<poll :poll="poll"></poll>
+	                    	<poll :slug="poll.slug"></poll>
 	                    </div>
 
 					</div>
@@ -152,7 +152,6 @@
 							toastr.error(response.data.message);
 							that.saveCopy = that.newQuestionCopy;
 						}
-						console.log(response);
 				    
 				  	})
 					.catch(function (error) {
@@ -165,7 +164,6 @@
 			}
 		},
 		created: function(){
-			console.log(this.edit_poll);
 			if(this.edit_poll){
 				this.poll = JSON.parse(this.edit_poll);
 				this.newQuestionCopy = this.updateQuestionCopy;
