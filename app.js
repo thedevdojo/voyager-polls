@@ -2744,7 +2744,7 @@ var axios = __webpack_require__(5);
 
 module.exports = {
 
-	props: ['slug'],
+	props: ['slug', 'poll'],
 
 	data: function data() {
 		return {
@@ -2795,13 +2795,17 @@ module.exports = {
 		this.computeQuestionsInner();
 		var sticky = new Sticky('#preview');
 		var that = this;
-		axios.get('/admin/polls/' + this.slug + '.json').then(function (response) {
-			that.loaded = true;
-			that.poll = response.data;
-			console.log(response);
-		}).catch(function (error) {
-			console.log(error.message);
-		});
+		if (this.slug) {
+			axios.get('/admin/polls/' + this.slug + '.json').then(function (response) {
+				that.loaded = true;
+				that.poll = response.data;
+				console.log(response);
+			}).catch(function (error) {
+				console.log(error.message);
+			});
+		} else {
+			this.loaded = true;
+		}
 	}
 
 };
@@ -5544,7 +5548,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("Preview:")]), _vm._v(" "), _c('poll', {
     attrs: {
-      "slug": _vm.poll.slug
+      "poll": _vm.poll
     }
   })], 1)]), _vm._v(" "), _c('div', {
     staticClass: "panel-footer"

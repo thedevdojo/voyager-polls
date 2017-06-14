@@ -36,7 +36,7 @@
 
 	                    <div class="col-md-6">
 	                    	<label for="preview">Preview:</label>
-	                    	<poll :slug="poll.slug"></poll>
+	                    	<poll :poll="poll"></poll>
 	                    </div>
 
 					</div>

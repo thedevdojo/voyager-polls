@@ -126,7 +126,7 @@
 
 	module.exports = {
 
-		props: ['slug'],
+		props: ['slug', 'poll'],
 
 		data: function(){
 			return {
@@ -181,15 +181,19 @@
 			this.computeQuestionsInner();
 			var sticky = new Sticky('#preview');
 			var that = this;
-			axios.get('/admin/polls/' + this.slug + '.json')
-					.then(function (response) {
-						that.loaded = true;
-						that.poll = response.data;
-						console.log(response);
-					})
-					.catch(function (error) {
-						console.log(error.message);
-					});
+			if(this.slug){
+				axios.get('/admin/polls/' + this.slug + '.json')
+						.then(function (response) {
+							that.loaded = true;
+							that.poll = response.data;
+							console.log(response);
+						})
+						.catch(function (error) {
+							console.log(error.message);
+						});
+			} else {
+				this.loaded = true;
+			}
 		}
 
 	}
