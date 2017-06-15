@@ -1,4 +1,4 @@
-<p align="center"><a href="https://the-control-group.github.io/voyager/" target="_blank"><img width="400" src="/cover.jpg?raw=true"></a></p>
+<p align="center"><a href="https://the-control-group.github.io/voyager/" target="_blank"><img width="400" src="/readme-logo.png?raw=true"></a></p>
 
 # Polls
 This is a hook for Voyager that allows you to add interactive polls to your application.
