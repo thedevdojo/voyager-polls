@@ -166,4 +166,21 @@ class PollsController extends \App\Http\Controllers\Controller
         $poll = Poll::where('slug', '=', $slug)->firstOrFail();
         return response()->json($this->getPollData($poll->id));
     }
+
+    public function api_vote(Request $request, $id){
+        if($request->ajax()){
+            $answer = PollAnswer::find($id);
+            if(!isset($answer)){
+                return response()->json( ['status' => 'error', 'message' => 'Answer Not Found'] );
+            }
+            $answer->votes += 1;
+            $answer->save();
+
+            $question = $answer->question;
+
+            return response()->json( ['status' => 'success', 'message' => 'Successfully Voted', 'question_id' => $question->id] );
+        } else {
+            return response()->json( ['status' => 'error', 'message' => 'Route cannot be called directly'] );
+        }
+    }
 }

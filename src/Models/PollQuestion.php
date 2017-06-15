@@ -8,9 +8,14 @@ class PollQuestion extends Model
 {
     protected $table = 'voyager_poll_questions';
     protected $fillable = ['poll_id', 'question', 'order'];
+    protected $appends = ['answered'];
 
     public function answers(){
     	return $this->hasMany('Hooks\VoyagerPolls\Models\PollAnswer', 'question_id')->orderBy('order', 'ASC');
+    }
+
+    public function getAnsweredAttribute(){
+    	return false;
     }
 
 }

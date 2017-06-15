@@ -2738,6 +2738,10 @@ module.exports = {
 //
 //
 //
+//
+//
+//
+//
 
 var Sticky = __webpack_require__(40);
 var axios = __webpack_require__(5);
@@ -2758,11 +2762,13 @@ module.exports = {
 				questions: {
 					id: '',
 					question: '',
-					answers: [{ 'id': '', 'answer': '' }, { 'id': '', 'answer': '' }, { 'id': '', 'answer': '' }]
+					answers: [{ 'id': '', 'answer': '' }, { 'id': '', 'answer': '' }, { 'id': '', 'answer': '' }],
+					answered: false
 				}
 			},
 			inner_offset: 0,
-			loaded: false
+			loaded: false,
+			isPreview: false
 		};
 	},
 	methods: {
@@ -2781,6 +2787,26 @@ module.exports = {
 		computeQuestionsInner: function computeQuestionsInner() {
 			this.questionsInnerStyles.marginLeft = this.inner_offset + '%';
 			this.questionsInnerStyles.width = 100 * this.poll.questions.length + '%';
+		},
+		vote: function vote(answer) {
+			if (typeof answer.id != "undefined") {
+				var answer_id = answer.id;
+				axios.post('/polls/api/vote/' + answer_id).then(function (response) {
+					if (response.data.question_id) {
+						localStorage.setItem("poll_question_" + response.data.question_id, answer_id);
+					} else {}
+
+					console.log(response);
+				}).catch(function (error) {
+					console.log(error.message);
+				});
+			}
+		},
+		questionAnswered: function questionAnswered(question) {
+			if (localStorage.getItem("poll_question_" + question.id)) {
+				return true;
+			}
+			return false;
 		}
 	},
 	watch: {
@@ -2792,19 +2818,25 @@ module.exports = {
 		}
 	},
 	created: function created() {
-		this.computeQuestionsInner();
-		var sticky = new Sticky('#preview');
-		var that = this;
+		axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
 		if (this.slug) {
-			axios.get('/admin/polls/' + this.slug + '.json').then(function (response) {
+			var that = this;
+			axios.get('/polls/api/' + this.slug + '.json').then(function (response) {
 				that.loaded = true;
 				that.poll = response.data;
+				for (var i = 0; i < that.poll.questions.length; i++) {
+					that.poll.questions[i].answered = false;
+				}
 				console.log(response);
 			}).catch(function (error) {
 				console.log(error.message);
 			});
 		} else {
 			this.loaded = true;
+			this.isPreview = true;
+			this.computeQuestionsInner();
+			var sticky = new Sticky('#preview');
 		}
 	}
 
@@ -5391,13 +5423,20 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         attrs: {
           "type": "radio",
           "name": "answer"
+        },
+        on: {
+          "click": function($event) {
+            _vm.vote(answer)
+          }
         }
       }), _vm._v(_vm._s(answer.answer))]) : _c('label', [_c('input', {
         attrs: {
           "type": "radio",
           "name": "answer"
         }
-      }), _vm._v("Answer " + _vm._s(answer_index + 1))])])
+      }), _vm._v("Answer " + _vm._s(answer_index + 1))]), _vm._v(" "), (question.answered) ? _c('div', {
+        staticClass: "answer_result"
+      }, [_vm._v("\n\t\t\t\t\t\t\t\tanswered\n\t\t\t\t\t\t\t")]) : _vm._e()])
     })], 2)
   }))])]), _vm._v(" "), _c('div', {
     staticClass: "panel-footer"
