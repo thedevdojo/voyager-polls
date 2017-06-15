@@ -35,7 +35,7 @@
 				</div>
 				<div class="poll_buttons">
 					<div class="btn btn-default" id="previous" @click="prev" :disabled="this.current_index != 1 ? false : true">Previous</div>
-					<div class="btn btn-default" id="next" @click="next" :disabled="(this.current_index < this.poll.questions.length && this.poll.questions[this.current_index-1].answered) ? false : true">Next</div>
+					<div class="btn btn-default" id="next" @click="next" :disabled="((this.current_index < this.poll.questions.length && this.poll.questions[this.current_index-1].answered) || isPreview) ? false : true">Next</div>
 				</div>
 				<div style="clear:both"></div>
 			</div>
@@ -178,18 +178,6 @@
 					marginLeft: '0%', 
 					width: '100%'
 				},
-				poll: {
-					questions:{
-						id:'',
-						question: '',
-						answers: [
-							{ 'id': '', 'answer': '' },
-							{ 'id': '', 'answer': '' },
-							{ 'id': '', 'answer': '' }
-						],
-						answered: false,
-					}
-				},
 				inner_offset: 0,
 				loaded: false,
 				isPreview: false,
@@ -223,11 +211,7 @@
 								question_answer.votes += 1;
 								that.questionAnswered(question_answered, question_answer);
 								localStorage.setItem("poll_question_" + question_answered.id, question_answer.id);
-							} else {
-
 							}
-							
-							console.log(response);
 						})
 						.catch(function (error) {
 							console.log(error.message);
@@ -235,11 +219,7 @@
 				}
 			},
 			questionAnswered: function(question, answer){
-				console.log('question/answer');
-				console.log(question);
-				console.log(answer);
 				question.total_votes = 0;
-				console.log(question.answers.length);
 				for(var i = 0; i < question.answers.length; i++){
 					 question.total_votes += question.answers[i].votes;
 				}
@@ -250,6 +230,20 @@
 				
 				question.answered = answer.id;
 				
+			},
+			createEmptyPoll: function(){
+				this.poll = {
+					questions:{
+						id:'',
+						question: '',
+						answers: [
+							{ 'id': '', 'answer': '' },
+							{ 'id': '', 'answer': '' },
+							{ 'id': '', 'answer': '' }
+						],
+						answered: false,
+					}
+				};
 			}
 		},
 		watch: {
@@ -272,20 +266,15 @@
 							for(var i = 0; i < that.poll.questions.length; i++){
 								var answered = parseInt(localStorage.getItem("poll_question_" + that.poll.questions[i].id));
 								if(answered){
-									//console.log('hit for poll_question_' + question.id );
 									for(var j = 0; j < that.poll.questions[i].answers.length; j++){
-										console.log('looped');
 										if(that.poll.questions[i].answers[j].id = answered){
 											that.questionAnswered(that.poll.questions[i], that.poll.questions[i].answers[j]);
 											break;
 										}
 									}
 									
-								} else {
-									//console.log('not hit for poll_question_' + question.id );
 								}
 							}
-							console.log(response);
 						})
 						.catch(function (error) {
 							console.log(error.message);
@@ -294,6 +283,7 @@
 				this.loaded = true;
 				this.isPreview = true;
 				this.computeQuestionsInner();
+				this.createEmptyPoll();
 				var sticky = new Sticky('#preview');
 			}
 		}
