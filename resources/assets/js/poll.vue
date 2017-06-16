@@ -368,7 +368,7 @@
 				this.questionsInnerStyles.width = (100*this.poll.questions.length) + '%';
 			},
 			vote: function(answer, question){
-				if(typeof(answer.id) != "undefined"){
+				if(typeof(answer.id) != "undefined" && !this.isPreview){
 					this.loading = true;
 					var question_answer = answer;
 					var question_answered = question;
