@@ -4,7 +4,7 @@
 @section('content')
 
 	<div id="app">
-		<poll-creator url="{{ url('/') }}" edit_poll="{{ @$poll }}"></poll-creator>
+		<poll-creator url="{{ env('APP_URL') }}" edit_poll="{{ @$poll }}"></poll-creator>
 	</div>
 	
 @endsection

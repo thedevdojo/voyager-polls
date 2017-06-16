@@ -14,6 +14,14 @@ class PollQuestion extends Model
     	return $this->hasMany('Hooks\VoyagerPolls\Models\PollAnswer', 'question_id')->orderBy('order', 'ASC');
     }
 
+    public function totalVotes(){
+    	$totalVotes = 0;
+    	foreach($this->answers as $answers){
+    		$totalVotes += $answers->votes;
+    	}
+    	return $totalVotes;
+    }
+    
     public function getAnsweredAttribute(){
     	return false;
     }

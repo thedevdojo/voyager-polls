@@ -29,6 +29,7 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
     {
         $namespacePrefix = '\\Hooks\\VoyagerPolls\\Http\\Controllers\\';
         $router->get('polls', ['uses' => $namespacePrefix.'PollsController@browse', 'as' => 'polls']);
+        $router->get('polls/{id}', ['uses' => $namespacePrefix.'PollsController@read', 'as' => 'polls.read']);
         $router->get('polls/add', ['uses' => $namespacePrefix.'PollsController@add', 'as' => 'polls.add']);
     	$router->post('polls/add', ['uses' => $namespacePrefix.'PollsController@add_post', 'as' => 'polls.add.post']);
     	$router->get('polls/{id}/edit', ['uses' => $namespacePrefix.'PollsController@edit', 'as' => 'polls.edit']);
@@ -38,8 +39,8 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function pollRoutesAPI($router){
     	$namespacePrefix = '\\Hooks\\VoyagerPolls\\Http\\Controllers\\';
-    	$router->post('polls/api/vote/{id}', ['uses' => $namespacePrefix.'PollsController@api_vote', 'as' => 'polls.vote']);
-    	$router->get('polls/api/{slug}.json', ['uses' => $namespacePrefix.'PollsController@json', 'as' => 'polls.json']);
+    	$router->post(env('ROUTE_PREFIX') . '/polls/api/vote/{id}', ['uses' => $namespacePrefix.'PollsController@api_vote', 'as' => 'polls.vote']);
+    	$router->get(env('ROUTE_PREFIX') . '/polls/api/{slug}.json', ['uses' => $namespacePrefix.'PollsController@json', 'as' => 'polls.json']);
     }
 
 	public function addPollsMenuItem(Menu $menu)

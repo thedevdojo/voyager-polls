@@ -40,7 +40,8 @@ class PollsController extends \App\Http\Controllers\Controller
     //****************************************
 
     public function read($id){
-
+        $poll = Poll::findOrFail($id);
+        return view('polls::read', compact('poll'));
     }
 
 

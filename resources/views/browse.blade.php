@@ -55,10 +55,10 @@
 	                            				<div class="btn-sm btn-danger pull-right delete" data-id="{{ $poll->id }}" id="delete-1">
 	                                                <i class="voyager-trash"></i> Delete
 	                                            </div>
-	                                            <a href="{{ url('/admin/polls') . '/' . $poll->id . '/edit' }}" class="btn-sm btn-primary pull-right edit">
+	                                            <a href="{{ url(env('ROUTE_PREFIX') . '/admin/polls') . '/' . $poll->id . '/edit' }}" class="btn-sm btn-primary pull-right edit">
 	                                                <i class="voyager-edit"></i> Edit
 	                                            </a>
-	                                            <a href="http://poll.dev/admin/users/1" class="btn-sm btn-warning pull-right">
+	                                            <a href="{{ url(env('ROUTE_PREFIX') . '/admin/polls') . '/' . $poll->id }}" class="btn-sm btn-warning pull-right">
 	                                                <i class="voyager-eye"></i> View
 	                                            </a>
 	                                        </td>
@@ -86,7 +86,7 @@
 	                        this Poll?</h4>
 	                </div>
 	                <div class="modal-footer">
-	                    <form action="/admin/polls/delete" id="delete_form" method="POST">
+	                    <form action="{{ env('ROUTE_PREFIX') }}/admin/polls/delete" id="delete_form" method="POST">
 	                        {{ method_field("DELETE") }}
 	                        {{ csrf_field() }}
 	                        <input type="hidden" value="" id="delete_id" name="id">
