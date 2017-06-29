@@ -68,9 +68,8 @@
 								<h4>{{ $question->question }} <small class="label label-success">{{ $total_votes }} Total Votes</small></h4>
 								<ul class="poll-results">
 								@foreach($question->answers as $answer)
-									@if($totalVotes == 0)
-										$percentage = 0;
-									@else
+									@php $percentage = 0; @endphp
+									@if($total_votes != 0)
 										$percentage = intval(100*($answer->votes/$total_votes)); 
 									@endif
 									<li>{{ $answer->answer }}<span class="poll-results-meter"><span class="label label-default label-bar" style="width:{{ $percentage }}%">{{ $percentage }}% with <b>{{ $answer->votes }}</b> votes</span></span></li>
