@@ -70,7 +70,7 @@
 								@foreach($question->answers as $answer)
 									@php $percentage = 0; @endphp
 									@if($total_votes != 0)
-										$percentage = intval(100*($answer->votes/$total_votes)); 
+										@php $percentage = intval(100*($answer->votes/$total_votes)); @endphp
 									@endif
 									<li>{{ $answer->answer }}<span class="poll-results-meter"><span class="label label-default label-bar" style="width:{{ $percentage }}%">{{ $percentage }}% with <b>{{ $answer->votes }}</b> votes</span></span></li>
 								@endforeach
