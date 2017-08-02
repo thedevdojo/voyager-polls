@@ -67,7 +67,10 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
 
 	private function loadModels(){
 		foreach($this->models as $model){
-			@include(__DIR__.'/Models/' . $model . '.php');
+			$namespacePrefix = '\\Hooks\\VoyagerPolls\\Models\\';
+			if(!class_exists($namespacePrefix . $model)){
+				@include(__DIR__.'/Models/' . $model . '.php');
+			}
 		}
 	}
 
