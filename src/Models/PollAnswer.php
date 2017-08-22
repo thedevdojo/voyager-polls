@@ -1,6 +1,6 @@
 <?php
 
-namespace Hooks\VoyagerPolls\Models;
+namespace VoyagerPolls\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,7 +10,7 @@ class PollAnswer extends Model
     protected $fillable = ['question_id', 'answer', 'order'];
 
     public function question(){
-    	return $this->belongsTo('Hooks\VoyagerPolls\Models\PollQuestion', 'question_id');
+    	return $this->belongsTo('VoyagerPolls\Models\PollQuestion', 'question_id');
     }
 
 }

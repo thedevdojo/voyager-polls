@@ -1,11 +1,11 @@
 <?php
 
-namespace Hooks\VoyagerPolls\Http\Controllers;
+namespace VoyagerPolls\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Hooks\VoyagerPolls\Models\Poll;
-use Hooks\VoyagerPolls\Models\PollQuestion;
-use Hooks\VoyagerPolls\Models\PollAnswer;
+use VoyagerPolls\Models\Poll;
+use VoyagerPolls\Models\PollQuestion;
+use VoyagerPolls\Models\PollAnswer;
 
 class PollsController extends \App\Http\Controllers\Controller
 {
