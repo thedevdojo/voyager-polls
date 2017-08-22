@@ -92,6 +92,6 @@
 
 @section('javascript')
 	<script>
-		<?php include(base_path('hooks/voyager-polls/app.js')); ?>
+		<?php include(VOYAGER_POLLS_PATH.'/app.js'); ?>
 	</script>
 @endsection
