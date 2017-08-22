@@ -1,6 +1,6 @@
 <?php
 
-namespace Hooks\VoyagerPolls\Models;
+namespace VoyagerPolls\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,7 +11,7 @@ class PollQuestion extends Model
     protected $appends = ['answered'];
 
     public function answers(){
-    	return $this->hasMany('Hooks\VoyagerPolls\Models\PollAnswer', 'question_id')->orderBy('order', 'ASC');
+    	return $this->hasMany('VoyagerPolls\Models\PollAnswer', 'question_id')->orderBy('order', 'ASC');
     }
 
     public function totalVotes(){

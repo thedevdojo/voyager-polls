@@ -1,0 +1,19 @@
+{
+  "name": "voyager-polls",
+  "description": "This is my first hook.",
+  "require": {
+    "larapack/hooks": "~1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "VoyagerPolls\\": "src/"
+    }
+  },
+  "extra": {
+    "hook": {
+      "providers": [
+        "VoyagerPolls\\PollsServiceProvider"
+      ]
+    }
+  }
+}

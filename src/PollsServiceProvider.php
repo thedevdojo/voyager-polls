@@ -1,5 +1,7 @@
 <?php
 
+namespace VoyagerPolls;
+
 use Illuminate\Events\Dispatcher;
 use TCG\Voyager\Models\Menu;
 use TCG\Voyager\Models\MenuItem;
@@ -11,15 +13,19 @@ use Illuminate\Database\Schema\Blueprint;
 class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
 {
 	private $models = [
-			'Poll',
-			'PollAnswer',
-			'PollQuestion'
-		];
+		'Poll',
+		'PollAnswer',
+		'PollQuestion'
+	];
+
+	public function register()
+	{
+		app(Dispatcher::class)->listen('voyager.admin.routing', [$this, 'addPollsRoutes']);
+		app(Dispatcher::class)->listen('voyager.menu.display', [$this, 'addPollsMenuItem']);
+	}
 
 	public function boot(\Illuminate\Routing\Router $router, Dispatcher $events)
 	{
-		$events->listen('voyager.admin.routing', [$this, 'addPollsRoutes']);
-		$events->listen('voyager.menu.display', [$this, 'addPollsMenuItem']);
 		$this->pollRoutesAPI($router);
 		$this->loadViewsFrom(base_path('hooks/voyager-polls/resources/views'), 'polls');
 		$this->loadModels();
@@ -27,18 +33,18 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
 
 	public function addPollsRoutes($router)
     {
-        $namespacePrefix = '\\Hooks\\VoyagerPolls\\Http\\Controllers\\';
+        $namespacePrefix = '\\VoyagerPolls\\Http\\Controllers\\';
         $router->get('polls', ['uses' => $namespacePrefix.'PollsController@browse', 'as' => 'polls']);
         $router->get('polls/add', ['uses' => $namespacePrefix.'PollsController@add', 'as' => 'polls.add']);
     	$router->post('polls/add', ['uses' => $namespacePrefix.'PollsController@add_post', 'as' => 'polls.add.post']);
     	$router->get('polls/{id}/edit', ['uses' => $namespacePrefix.'PollsController@edit', 'as' => 'polls.edit']);
     	$router->post('polls/edit', ['uses' => $namespacePrefix.'PollsController@edit_post', 'as' => 'polls.edit.post']);
     	$router->delete('polls/delete', ['uses' => $namespacePrefix.'PollsController@delete', 'as' => 'polls.delete']);
-	$router->get('polls/{id}', ['uses' => $namespacePrefix.'PollsController@read', 'as' => 'polls.read']);
+		$router->get('polls/{id}', ['uses' => $namespacePrefix.'PollsController@read', 'as' => 'polls.read']);
     }
 
     public function pollRoutesAPI($router){
-    	$namespacePrefix = '\\Hooks\\VoyagerPolls\\Http\\Controllers\\';
+    	$namespacePrefix = '\\VoyagerPolls\\Http\\Controllers\\';
     	$router->post(env('ROUTE_PREFIX') . '/polls/api/vote/{id}', ['uses' => $namespacePrefix.'PollsController@api_vote', 'as' => 'polls.vote']);
     	$router->get(env('ROUTE_PREFIX') . '/polls/api/{slug}.json', ['uses' => $namespacePrefix.'PollsController@json', 'as' => 'polls.json']);
     }
@@ -67,7 +73,7 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
 
 	private function loadModels(){
 		foreach($this->models as $model){
-			$namespacePrefix = '\\Hooks\\VoyagerPolls\\Models\\';
+			$namespacePrefix = 'VoyagerPolls\\Models\\';
 			if(!class_exists($namespacePrefix . $model)){
 				@include(__DIR__.'/Models/' . $model . '.php');
 			}

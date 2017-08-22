@@ -1,6 +1,6 @@
 <?php
 
-namespace Hooks\VoyagerPolls\Models;
+namespace VoyagerPolls\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,6 +10,6 @@ class Poll extends Model
     protected $fillable = ['name', 'slug'];
 
     public function questions(){
-    	return $this->hasMany('Hooks\VoyagerPolls\Models\PollQuestion', 'poll_id')->orderBy('order', 'ASC');
+    	return $this->hasMany('VoyagerPolls\Models\PollQuestion', 'poll_id')->orderBy('order', 'ASC');
     }
 }
