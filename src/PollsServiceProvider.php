@@ -20,6 +20,8 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
 
 	public function register()
 	{
+		define('VOYAGER_POLLS_PATH', __DIR__.'/..');
+		
 		app(Dispatcher::class)->listen('voyager.admin.routing', [$this, 'addPollsRoutes']);
 		app(Dispatcher::class)->listen('voyager.menu.display', [$this, 'addPollsMenuItem']);
 	}
@@ -27,7 +29,7 @@ class PollsServiceProvider extends \Illuminate\Support\ServiceProvider
 	public function boot(\Illuminate\Routing\Router $router, Dispatcher $events)
 	{
 		$this->pollRoutesAPI($router);
-		$this->loadViewsFrom(base_path('hooks/voyager-polls/resources/views'), 'polls');
+		$this->loadViewsFrom(__DIR__.'/../resources/views', 'polls');
 		$this->loadModels();
 	}
 
