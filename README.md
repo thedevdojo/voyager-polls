@@ -38,7 +38,7 @@ Add as many polls as you would like, and then move on to learn how you can integ
 Voyager Polls allows you to easily embed the poll custom component using Vue.js. inside of your main `app.js` file of your app you'll want to include the **poll** component:
 
 ```
-Vue.component('poll', require('../../../hooks/voyager-polls/resources/assets/js/poll.vue'));
+Vue.component('poll', require('../../../vendor/voyager-polls/resources/assets/js/poll.vue'));
 
 const app = new Vue({
     el: '#app'
@@ -73,7 +73,7 @@ Then within your `voyager_custom.js` file you will need to add the following to 
 
 ```
 
-require ('../../../hooks/voyager-polls/resources/assets/js/tinymce-polls-plugin');
+require ('../../../vendor/voyager-polls/resources/assets/js/tinymce-polls-plugin');
 
 
 tinymce.init({
