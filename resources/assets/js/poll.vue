@@ -56,6 +56,9 @@
 
 <style type="text/css">
 
+	.poll-panel{
+		text-align:left;
+	}
 	.poll-questions {
 	  width: 100%;
 	  overflow: hidden;
@@ -110,6 +113,7 @@
 		height:20px;
 		border:1px solid #ccc;
 		position:relative;
+		left:0px;
 	}
 
 	.answer_result .poll-percentage-bar span{
@@ -328,7 +332,7 @@
 </style>
 
 <script>
-	var Sticky = require('sticky-js');
+	//var Sticky = require('sticky-js');
 	var axios = require('axios');
 
 	module.exports = {
