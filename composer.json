@@ -1,6 +1,7 @@
 {
   "name": "voyager-polls",
   "description": "This is my first hook.",
+  "tags": ["voyager"],
   "require": {
     "larapack/hooks": "~1.0"
   },
