@@ -52,7 +52,7 @@
 		<div id="polls">
 			<div class="container-fluid">
 				<div class="col-md-12">
-					<a href="{{ route('voyager.polls.index') }}" class="polls-back"><i class="voyager-angle-left"></i> Back to all Polls</a>
+					<a href="{{ route('voyager.polls') }}" class="polls-back"><i class="voyager-angle-left"></i> {{ __('polls.back_to_polls') }}</a>
 				</div>
 				<div class="col-md-6">
 					<poll slug="{{ $poll->slug }}" prefix="{{ env('ROUTE_PREFIX') }}"></poll>
@@ -60,19 +60,19 @@
 				<div class="col-md-6">
 					<div class="panel panel-default" data-margin-top="80">
 						<div class="panel-title">
-							<h2>Results</h2>
+							<h2>{{ __('polls.results') }}</h2>
 						</div>
 						<div class="panel-body">
 							@foreach($poll->questions as $question)
 								@php $total_votes = $question->totalVotes(); @endphp
-								<h4>{{ $question->question }} <small class="label label-success">{{ $total_votes }} Total Votes</small></h4>
+								<h4>{{ $question->question }} <small class="label label-success">{{ $total_votes }} {{ str_plural( __('polls.total'), $total_votes)  }}</small></h4>
 								<ul class="poll-results">
 								@foreach($question->answers as $answer)
 									@php $percentage = 0; @endphp
 									@if($total_votes != 0)
 										@php $percentage = intval(100*($answer->votes/$total_votes)); @endphp
 									@endif
-									<li>{{ $answer->answer }}<span class="poll-results-meter"><span class="label label-default label-bar" style="width:{{ $percentage }}%">{{ $percentage }}% with <b>{{ $answer->votes }}</b> votes</span></span></li>
+									<li>{{ $answer->answer }}<span class="poll-results-meter"><span class="label label-default label-bar" style="width:{{ $percentage }}%">{{ $percentage }}% {{ __('polls.with') }} <b>{{ $answer->votes }}</b> {{ __('polls.votes') }}</span></span></li>
 								@endforeach
 								</ul>
 							@endforeach
@@ -91,7 +91,5 @@
 @endsection
 
 @section('javascript')
-	<script>
-		<?php include(VOYAGER_POLLS_PATH.'/app.js'); ?>
-	</script>
+	<script type="text/javascript" src="{{ asset('/js/polls-app.js') }}"></script>
 @endsection
