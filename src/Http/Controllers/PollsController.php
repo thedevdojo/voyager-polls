@@ -117,7 +117,7 @@ class PollsController extends \App\Http\Controllers\Controller
     }
 
 
-    private function updateOrCreatePoll($request, $success_msg){
+    protected function updateOrCreatePoll($request, $success_msg){
         try{
             $request->poll = json_decode(json_encode($request->poll), FALSE);
 
@@ -155,7 +155,7 @@ class PollsController extends \App\Http\Controllers\Controller
         }
     }
 
-    private function getPollData($id){
+    protected function getPollData($id){
         $poll = Poll::with('questions')->findOrFail($id);
         foreach($poll->questions as $question){
             $question['answers'] = $question->answers;
