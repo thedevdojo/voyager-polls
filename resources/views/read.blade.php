@@ -52,7 +52,7 @@
 		<div id="polls">
 			<div class="container-fluid">
 				<div class="col-md-12">
-					<a href="{{ url(env('ROUTE_PREFIX') . '/admin/polls') }}" class="polls-back"><i class="voyager-angle-left"></i> Back to all Polls</a>
+					<a href="{{ route('voyager.polls.index') }}" class="polls-back"><i class="voyager-angle-left"></i> Back to all Polls</a>
 				</div>
 				<div class="col-md-6">
 					<poll slug="{{ $poll->slug }}" prefix="{{ env('ROUTE_PREFIX') }}"></poll>
