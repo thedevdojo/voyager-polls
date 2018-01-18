@@ -22,8 +22,8 @@ class PollsController extends \App\Http\Controllers\Controller
     //****************************************
 
     public function browse(){
-    	$polls = Poll::paginate(10);
-    	return view('polls::browse', compact('polls'));
+        $polls = Poll::paginate(10);
+        return view('polls::browse', compact('polls'));
     }
 
 
@@ -58,13 +58,13 @@ class PollsController extends \App\Http\Controllers\Controller
     //****************************************
 
     public function edit($id){
-    	$poll = $this->getPollData($id);
-    	return view('polls::edit-add', compact('poll'));
+        $poll = $this->getPollData($id);
+        return view('polls::edit-add', compact('poll'));
     }
 
     // BR(E)AD POST REQUEST
     public function edit_post(Request $request){
-        return $this->updateOrCreatePoll($request, 'Successfully updated poll!');
+        return $this->updateOrCreatePoll($request, __('polls.successfully_poll_updated'));
     }
 
     //***************************************
@@ -81,12 +81,12 @@ class PollsController extends \App\Http\Controllers\Controller
     //****************************************
 
     public function add(){
-    	return view('polls::edit-add');
+        return view('polls::edit-add');
     }
 
     // BRE(A)D POST REQUEST
     public function add_post(Request $request){
-    	return $this->updateOrCreatePoll($request, 'Successfully created new poll!');
+        return $this->updateOrCreatePoll($request, __('polls.successfully_poll_added'));
     }
 
     //***************************************
@@ -105,7 +105,7 @@ class PollsController extends \App\Http\Controllers\Controller
         $id = $request->id;
         $data = Poll::destroy($id)
             ? [
-                'message'    => "Successfully Deleted Poll",
+                'message'    => __('polls.successfully_poll_deleted'),
                 'alert-type' => 'success',
             ]
             : [
@@ -117,14 +117,14 @@ class PollsController extends \App\Http\Controllers\Controller
     }
 
 
-    private function updateOrCreatePoll($request, $success_msg){
+    protected function updateOrCreatePoll($request, $success_msg){
         try{
             $request->poll = json_decode(json_encode($request->poll), FALSE);
-        
+
             $poll = Poll::updateOrCreate(
-                    ['id' => $request->poll->id],
-                    ['name' => $request->poll->name, 'slug' => $request->poll->slug ]
-                );
+                ['id' => $request->poll->id],
+                ['name' => $request->poll->name, 'slug' => $request->poll->slug ]
+            );
 
             // delete any questions that have been removed
             PollQuestion::where('poll_id', '=', $poll->id)->whereNotIn('id', array_pluck($request->poll->questions, 'id'))->delete();
@@ -155,7 +155,7 @@ class PollsController extends \App\Http\Controllers\Controller
         }
     }
 
-    private function getPollData($id){
+    protected function getPollData($id){
         $poll = Poll::with('questions')->findOrFail($id);
         foreach($poll->questions as $question){
             $question['answers'] = $question->answers;
@@ -172,14 +172,14 @@ class PollsController extends \App\Http\Controllers\Controller
         if($request->ajax()){
             $answer = PollAnswer::find($id);
             if(!isset($answer)){
-                return response()->json( ['status' => 'error', 'message' => 'Answer Not Found'] );
+                return response()->json( ['status' => 'error', 'message' => __('polls.answer_not_found')] );
             }
             $answer->votes += 1;
             $answer->save();
 
             $question = $answer->question;
 
-            return response()->json( ['status' => 'success', 'message' => 'Successfully Voted', 'question_id' => $question->id] );
+            return response()->json( ['status' => 'success', 'message' => __('polls.successfully_voted'), 'question_id' => $question->id] );
         } else {
             return response()->json( ['status' => 'error', 'message' => 'Route cannot be called directly'] );
         }
