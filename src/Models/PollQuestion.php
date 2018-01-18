@@ -14,6 +14,10 @@ class PollQuestion extends Model
     	return $this->hasMany('VoyagerPolls\Models\PollAnswer', 'question_id')->orderBy('order', 'ASC');
     }
 
+    public function poll() {
+        return $this->belongsTo('VoyagerPolls\Models\Poll', 'poll_id');
+    }
+
     public function totalVotes(){
     	$totalVotes = 0;
     	foreach($this->answers as $answers){
