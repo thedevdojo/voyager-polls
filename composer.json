@@ -1,6 +1,6 @@
 {
   "name": "voyager-polls",
-  "description": "This is my first hook.",
+  "description": "Create Interactive Polls with this hook for Voyager",
   "tags": ["voyager"],
   "require": {
     "larapack/hooks": "~1.0"
